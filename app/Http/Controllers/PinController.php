@@ -454,7 +454,7 @@ class PinController extends Controller
         // This method will be used to get chart data for a specific pin
         $range = request('range', 'day');
         
-        // Sample data - replace with actual data from your database
+        // The returned data is placeholder sample data
         $data = [
             'timestamps' => [],
             'values' => [],
