@@ -468,6 +468,11 @@ class PinController extends Controller
         return response()->json($data);
     }
 
+    public function chartData(Request $request, Pin $pin)
+    {
+        return $this->getChartData($request, $pin);
+    }
+
     public function getChartData(Request $request, Pin $pin)
     {
         try {

@@ -12,6 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            Schema::table('devices', function (Blueprint $table) {
+                $table->unsignedBigInteger('user_id')->after('id')->nullable();
+            });
+            return;
+        }
+
         Schema::table('devices', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id')->after('id')->nullable();
         });
