@@ -102,10 +102,11 @@ class Device extends Model
 
     public function getLocalIpAddress()
     {
-        if (PHP_OS === 'WINNT') {
+        if (PHP_OS_FAMILY === 'Windows') {
             // Windows
             $output = [];
             exec('ipconfig', $output);
+            $inVBoxSection = false;
             foreach ($output as $line) {
                 // Cari adapter VirtualBox Host-Only
                 if (strpos($line, 'VirtualBox Host-Only') !== false || strpos($line, 'Ethernet adapter VirtualBox Host-Only') !== false) {
@@ -113,7 +114,7 @@ class Device extends Model
                     continue;
                 }
                 
-                if (isset($inVBoxSection) && strpos($line, 'IPv4 Address') !== false) {
+                if ($inVBoxSection && strpos($line, 'IPv4 Address') !== false) {
                     $parts = explode(':', $line);
                     if (count($parts) >= 2) {
                         $ip = trim($parts[1]);
