@@ -12,7 +12,7 @@ class TelegramService
 
     public function __construct()
     {
-        $this->botToken = env('TELEGRAM_BOT_TOKEN', '8028205316:AAETned3PdmcZd4F05t7XbEKWZJh0nlMcFE');
+        $this->botToken = env('TELEGRAM_BOT_TOKEN');
         
         if (empty($this->botToken)) {
             \Log::error('Telegram bot token not configured');
