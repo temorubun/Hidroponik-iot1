@@ -73,9 +73,9 @@
                         <i class="fas fa-project-diagram feature-icon"></i>
                         <h3 class="gradient-text">
                             <i class="fas fa-chart-area"></i>
-                            Analisis Data
+                            Data Analysis
                         </h3>
-                        <p>Dapatkan wawasan mendalam tentang kondisi tanaman Anda melalui analisis data yang komprehensif dan visualisasi yang mudah dipahami.</p>
+                        <p>Dapatkan wawasan mendalam tentang kondisi tanaman Anda melalui data analysis yang komprehensif dan visualisasi yang mudah dipahami.</p>
                     </div>
                 </div>
             </div>
