@@ -1,0 +1,368 @@
+/* Modern Variables */
+:root {
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --surface-color: #ffffff;
+    --background-color: #f3f4f6;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 24px;
+    background: var(--surface-color);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08);
+}
+
+.card-body {
+    padding: 2.5rem;
+}
+
+/* Profile Header */
+.profile-header {
+    position: relative;
+    padding: 3rem 0 2rem;
+    text-align: center;
+    background: var(--primary-gradient);
+    border-radius: 24px 24px 0 0;
+    margin: 0;
+    color: white;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,0.1)' fill-rule='evenodd'/%3E%3C/svg%3E");
+    opacity: 0.3;
+    border-radius: 24px 24px 0 0;
+}
+
+/* Avatar Styles */
+.avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+}
+
+#avatar-preview {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.camera-icon {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+}
+
+.camera-icon label {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-color);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.camera-icon label:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: #f8f9fa;
+}
+
+.camera-icon i {
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+/* Form Controls */
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--background-color);
+}
+
+.form-control:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    background: var(--surface-color);
+}
+
+.form-control::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Buttons */
+.btn {
+    padding: 0.875rem 1.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn:hover::after {
+    opacity: 1;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.btn-danger {
+    background: var(--danger-gradient);
+    border: none;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.btn-outline-danger {
+    color: #dc2626;
+    border: 2px solid #dc2626;
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: var(--danger-gradient);
+    border-color: transparent;
+    color: white;
+}
+
+/* Danger Zone */
+.card.border-danger {
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: linear-gradient(rgba(239, 68, 68, 0.02), rgba(239, 68, 68, 0.02));
+}
+
+.card.border-danger .card-header {
+    background: var(--danger-gradient);
+    border-bottom: none;
+    padding: 1.5rem 2.5rem;
+    border-radius: 24px 24px 0 0;
+}
+
+/* Small Text */
+.text-muted {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.75rem;
+    }
+    
+    .profile-header {
+        padding: 2rem 0 1.5rem;
+    }
+    
+    #avatar-preview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .camera-icon label {
+        width: 34px;
+        height: 34px;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+.security-section:not(:last-child) {
+    margin-bottom: 2rem;
+}
+
+.card {
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
+}
+
+.input-group-text {
+    border: none;
+    background-color: #f8f9fa;
+}
+
+.form-control {
+    border: 1px solid #e9ecef;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.btn {
+    font-weight: 500;
+    padding: .5rem 1.5rem;
+}
+
+.profile-user-img {
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,.05);
+}
+
+/* Profile Card Specific Styles */
+.profile-avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
+.profile-avatar-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border-radius: 50%;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    cursor: pointer;
+    margin-right: -5px;
+    margin-bottom: -5px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+/* Security Section Styles */
+.security-card {
+    margin-top: 1.5rem;
+}
+
+.security-heading {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.security-description {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Styles */
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Alert Styles */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+/* Button Styles */
+.btn-action {
+    min-width: 140px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-user-img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .profile-avatar-upload {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+} 

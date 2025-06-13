@@ -1,0 +1,72 @@
+:root {
+    --gradient-start: #00BFA6;
+    --gradient-end: #0093E9;
+    --gradient-mix: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    --shadow-color: rgba(0, 191, 166, 0.15);
+}
+
+.gradient-text {
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.gradient-icon {
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.empty-state-icon::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 10px;
+    left: 10px;
+    background: var(--gradient-mix);
+    filter: blur(20px);
+    opacity: 0.2;
+    z-index: -1;
+}
+
+.table {
+    margin: 0;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 1rem;
+    border-top: none;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: var(--text-primary);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 2rem;
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #2ECC71 0%, #1abc9c 100%) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%) !important;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+} 

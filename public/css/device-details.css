@@ -1,0 +1,688 @@
+/* Page Background */
+body {
+    background-color: #f0f9ff;
+}
+
+/* Breadcrumb Styles */
+.dashboard-link {
+    color: #06b6d4;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    padding: 0.75rem 1.75rem;
+    border-radius: 100px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-link i {
+    font-size: 1.25rem;
+    color: #06b6d4;
+    margin-right: 0.75rem;
+}
+
+.dashboard-link:hover {
+    color: #0891b2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styles */
+.content-title {
+    color: #0ea5e9;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.content-subtitle {
+    color: #64748b;
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+}
+
+/* Action Buttons Container */
+[slot="actions"] {
+    margin-bottom: 3rem;
+    display: flex;
+    gap: 1rem;
+}
+
+/* Action Buttons */
+.btn {
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.5rem;
+}
+
+.btn-primary {
+    background: var(--gradient-mix);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.btn-white {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #1a202c;
+}
+
+.btn-white:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Card Styles */
+.card {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    margin-top: 2rem;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-mix);
+    opacity: 0.05;
+    transform: rotate(-5deg) scale(1.2);
+    z-index: 0;
+    transition: all 0.5s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px var(--shadow-color);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.card:hover::before {
+    transform: rotate(-8deg) scale(1.3);
+    opacity: 0.08;
+}
+
+.card-body {
+    position: relative;
+    z-index: 1;
+    padding: 1.5rem;
+    background: transparent;
+}
+
+/* Add root variables if not defined */
+:root {
+    --gradient-start: #00BFA6;
+    --gradient-end: #0093E9;
+    --gradient-mix: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    --shadow-color: rgba(0, 191, 166, 0.15);
+    --card-bg: rgba(255, 255, 255, 0.5);
+    --card-hover-bg: rgba(255, 255, 255, 0.65);
+}
+
+/* Section Headers */
+.text-uppercase {
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* Config Info Box with new style */
+.config-info {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 191, 166, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.config-info::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-mix);
+    opacity: 0.05;
+    transform: rotate(-5deg) scale(1.2);
+    z-index: 0;
+    transition: all 0.5s ease;
+}
+
+.config-info:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 191, 166, 0.2);
+    box-shadow: 0 8px 25px var(--shadow-color);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.config-info:hover::before {
+    transform: rotate(-8deg) scale(1.3);
+    opacity: 0.08;
+}
+
+.config-info > div {
+    position: relative;
+    z-index: 1;
+}
+
+.config-info .d-flex {
+    padding: 0.5rem 0;
+}
+
+.config-info i {
+    font-size: 1.1rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+}
+
+.config-info .fw-medium {
+    color: #1e293b;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+.config-info .ps-4 {
+    color: #475569;
+    padding-left: 2rem !important;
+    font-size: 0.95rem;
+}
+
+.password-field {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+    color: #475569;
+}
+
+.btn-link.text-primary {
+    color: var(--gradient-start) !important;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+}
+
+.btn-link.text-primary:hover {
+    color: var(--gradient-end) !important;
+    transform: translateY(-1px);
+    background: rgba(0, 191, 166, 0.1);
+}
+
+.btn-link.text-primary i {
+    font-size: 1rem;
+    opacity: 1;
+}
+
+/* Text styles */
+.text-uppercase.text-muted {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #64748b !important;
+    margin-bottom: 0.75rem;
+}
+
+/* Status Badge */
+.badge {
+    font-weight: 500;
+    padding: 0.625rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 32px;
+    line-height: 1;
+}
+
+.badge.bg-success {
+    background: rgba(34, 197, 94, 0.1) !important;
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.badge.bg-danger {
+    background-color: #ef4444 !important;
+    color: white;
+    border: none;
+}
+
+.badge i {
+    font-size: 0.625rem;
+}
+
+.badge.bg-success i {
+    color: #16a34a;
+}
+
+.badge.bg-danger i {
+    color: white;
+}
+
+/* Reboot Button */
+#rebootBtn {
+    background: #fbbf24;
+    border: none;
+    color: #1a202c;
+    padding: 0.625rem 1rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 32px;
+    line-height: 1;
+}
+
+#rebootBtn i {
+    font-size: 0.8125rem;
+    line-height: 1;
+}
+
+#rebootBtn:hover {
+    background: #f59e0b;
+    transform: translateY(-1px);
+}
+
+#rebootBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Device Key Section */
+.input-group {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    border: 1px solid rgba(0, 191, 166, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: stretch;
+    box-shadow: 0 4px 15px rgba(0, 191, 166, 0.08);
+}
+
+.input-group::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-mix);
+    opacity: 0.05;
+    transition: opacity 0.3s ease;
+}
+
+.input-group:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 191, 166, 0.2);
+    box-shadow: 0 8px 25px var(--shadow-color);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.input-group:hover::before {
+    opacity: 0.08;
+}
+
+.input-group .form-control {
+    flex: 1;
+    background: transparent !important;
+    border: none;
+    padding: 1rem 1.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: #1e293b;
+    letter-spacing: 0.75px;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    font-weight: 500;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+    outline: none;
+    background: transparent !important;
+}
+
+.input-group .form-control::selection {
+    background: rgba(0, 191, 166, 0.2);
+    color: #1e293b;
+}
+
+.input-group .form-control:read-only {
+    background: transparent !important;
+}
+
+.input-group .btn {
+    background: transparent;
+    border: none;
+    border-left: 1px solid rgba(0, 191, 166, 0.1);
+    padding: 0.75rem 1.25rem;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.5rem;
+}
+
+.input-group .btn:hover {
+    background: rgba(0, 191, 166, 0.1);
+}
+
+.input-group .btn:active {
+    background: rgba(0, 191, 166, 0.2);
+}
+
+.input-group .btn i {
+    font-size: 1.1rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.input-group .btn:hover i {
+    opacity: 1;
+}
+
+/* Device Key Container */
+.device-key-container {
+    margin-top: 1.5rem;
+}
+
+.device-key-container .text-uppercase {
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+/* Pin Cards specific style */
+.card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Empty State */
+.text-center.py-5 {
+    padding: 3rem 0;
+}
+
+.text-center.py-5 .fa-4x {
+    font-size: 4rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.text-center.py-5 .fa-4x:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .border-end {
+        border: none !important;
+    }
+    
+    .card-body .row > div:first-child {
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .content-title {
+        font-size: 1.5rem;
+    }
+    
+    .content-subtitle {
+        font-size: 1rem;
+    }
+}
+
+.border-end {
+    border-color: rgba(0, 191, 166, 0.1) !important;
+}
+
+.card-body .row > div:first-child {
+    border-bottom-color: rgba(0, 191, 166, 0.1);
+}
+
+/* Icon Styles */
+.fas.fa-network-wired,
+.fas.fa-plug {
+    font-size: 1.1rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.fas.fa-network-wired:hover,
+.fas.fa-plug:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Update existing icon styles to be more specific */
+.config-info i,
+.input-group .btn i {
+    font-size: 1.1rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.config-info i:hover,
+.input-group .btn i:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Device Info Card specific style */
+.card.shadow-sm.mb-4 {
+    margin-top: 2rem;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.card.shadow-sm.mb-4::before {
+    transform: none;
+    opacity: 0.05;
+    transition: opacity 0.3s ease;
+}
+
+.card.shadow-sm.mb-4:hover::before {
+    transform: none;
+    opacity: 0.08;
+}
+
+.card.shadow-sm.mb-4:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px var(--shadow-color);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+/* Keep other card animations */
+.card:not(.shadow-sm.mb-4)::before {
+    transform: rotate(-5deg) scale(1.2);
+}
+
+.card:not(.shadow-sm.mb-4):hover::before {
+    transform: rotate(-8deg) scale(1.3);
+}
+
+/* Pin Card Styles */
+.pin-card {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.pin-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-mix);
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.pin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px var(--shadow-color);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.pin-card:hover::before {
+    opacity: 0.08;
+}
+
+.pin-card .pin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.pin-card .pin-name {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #1a202c;
+    margin: 0;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pin-card .pin-status {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+.pin-card .pin-status.active {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.pin-card .pin-status.inactive {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.pin-card .pin-type,
+.pin-card .pin-number,
+.pin-card .pin-value,
+.pin-card .form-switch {
+    position: relative;
+    z-index: 1;
+}
+
+.pin-card .pin-type i,
+.pin-card .pin-number i {
+    font-size: 1.1rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+}
+
+.pin-card .edit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.5);
+    color: #475569;
+    border: 1px solid rgba(0, 191, 166, 0.1);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(5px);
+}
+
+.pin-card .edit-btn:hover {
+    background: rgba(255, 255, 255, 0.65);
+    border-color: rgba(0, 191, 166, 0.2);
+    color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.pin-card .edit-btn i {
+    font-size: 1rem;
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pin-card .form-check-input:checked {
+    background-color: var(--gradient-start);
+    border-color: var(--gradient-start);
+}
+
+.pin-card .form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem var(--shadow-color);
+} 

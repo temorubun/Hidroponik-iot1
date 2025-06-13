@@ -1,0 +1,140 @@
+/* Project Detail Page Styles */
+:root {
+    --text-primary: #2D3748;
+    --text-secondary: #718096;
+    --text-muted: #A0AEC0;
+    --card-bg: #FFFFFF;
+    --card-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    --card-radius: 15px;
+    --card-border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Project Info Card */
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Project Stats */
+.stats-card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--gradient-mix);
+    color: white;
+    font-size: 1.25rem;
+}
+
+.stats-card h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.stats-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Project Card */
+.project-card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Device List Table */
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 1rem;
+    border-top: none;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: var(--text-primary);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Empty State */
+.empty-state-icon {
+    color: var(--gradient-start);
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-icon + h4 {
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.empty-state-icon ~ p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    max-width: 400px;
+    margin: 0 auto 1.5rem;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.75rem;
+} 

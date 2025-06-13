@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
 <div class="container">
@@ -284,19 +284,7 @@
 </div>
 
 @push('styles')
-<style>
-.card {
-    border-radius: 10px;
-}
-.card-header {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-.form-check-input:checked {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-</style>
+<link href="{{ asset('css/devices.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
@@ -317,10 +305,10 @@ function togglePassword() {
 }
 
 function copyDeviceKey() {
-    const input = document.querySelector('input[value="{{ $device->device_key }}"]');
-    input.select();
-    document.execCommand('copy');
-    alert('Device key copied to clipboard!');
+    const deviceKey = document.getElementById('device_key').value;
+    navigator.clipboard.writeText(deviceKey).then(() => {
+        notifications.success('Device key copied to clipboard!');
+    });
 }
 
 function updatePinConfig(pinNumber) {
@@ -403,27 +391,19 @@ function saveConfiguration() {
     @endforeach
 
     // Send configuration to server
-    fetch(`/api/devices/{{ $device->id }}/configure`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify(config)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('Configuration saved successfully!');
-            window.location.href = '{{ route('devices.show', $device) }}';
-        } else {
-            alert('Failed to save configuration: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to save configuration');
-    });
+    axios.post('/api/devices/{{ $device->id }}/configure', config)
+        .then(response => {
+            if (response.data.success) {
+                notifications.success('Configuration saved successfully!');
+                window.location.href = '{{ route('devices.show', $device) }}';
+            } else {
+                notifications.error('Failed to save configuration: ' + response.data.message);
+            }
+        })
+        .catch(error => {
+            notifications.error('Failed to save configuration');
+            console.error('Error:', error);
+        });
 }
 
 // Initialize existing pin configurations

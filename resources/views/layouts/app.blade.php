@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('meta')
+    <link rel="icon" type="image/png" href="{{ asset('logo1.png') }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -16,33 +17,18 @@
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <style>
-        .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-        .navbar-brand {
-            font-weight: 600;
-            color: #4a5568;
-        }
-        .form-check-input:checked {
-            background-color: #38a169;
-            border-color: #38a169;
-        }
-        .badge {
-            font-weight: 500;
-        }
-    </style>
+    <link href="{{ asset('css/floating-icons.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/layout-app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/common.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body>
-    <div id="app">
+    <div id="app" class="main-container">
+        @include('components.floating-icons')
+        
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+            <div class="container-fluid px-4">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <i class="fas fa-microchip me-2"></i>{{ config('app.name', 'IoT Blink') }}
                 </a>
@@ -53,33 +39,11 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-                        @auth
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('projects.index') }}">
-                                <i class="fas fa-project-diagram me-1"></i>Projects
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('devices.index') }}">
-                                <i class="fas fa-microchip me-1"></i>Devices
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('pins.index') }}">
-                                <i class="fas fa-plug me-1"></i>Pins
-                            </a>
-                        </li>
-                        @endauth
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
@@ -121,13 +85,44 @@
             </div>
         </nav>
 
-        <main class="py-4">
-            @yield('content')
-        </main>
+        <div class="content-container">
+            @auth
+            <aside class="sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('projects*') ? 'active' : '' }}" href="{{ route('projects.index') }}">
+                            <i class="fas fa-project-diagram"></i>Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('devices*') ? 'active' : '' }}" href="{{ route('devices.index') }}">
+                            <i class="fas fa-microchip"></i>Devices
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('pins*') ? 'active' : '' }}" href="{{ route('pins.index') }}">
+                            <i class="fas fa-plug"></i>Pins
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            @endauth
+
+            <main class="main-content">
+                @yield('content')
+            </main>
+        </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Core Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/notifications.js') }}"></script>
     @stack('scripts')
 </body>
 </html> 

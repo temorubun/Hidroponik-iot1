@@ -1,652 +1,850 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Edit Pin: {{ $pin->name }}</h5>
-                    <a href="{{ route('devices.show', $device) }}" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </a>
-                </div>
+    @component('layouts.content-layout')
+        @slot('breadcrumb')
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ route('devices.index') }}" class="dashboard-link" data-aos="fade-right">
+                <i class="fas fa-microchip me-2"></i>
+                    Devices
+                </a>
+                <i class="fas fa-angle-right text-muted"></i>
+                <a href="{{ route('devices.show', $pin->device) }}" class="dashboard-link" data-aos="fade-right" data-aos-delay="100">
+                    <i class="fas fa-server me-2"></i>
+                    {{ $pin->device->name }}
+                </a>
+            </div>
+        @endslot
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('pins.update', [$device, $pin]) }}">
+        @slot('title', 'Edit Pin')
+        @slot('subtitle', $pin->name)
+        @slot('icon', 'fas fa-plug')
+
+        @include('components.confirm-modal', [
+            'title' => 'Delete Pin',
+            'message' => 'Are you sure you want to delete this pin? This action cannot be undone.',
+            'formId' => 'deletePinForm'
+        ])
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body p-4">
+                        <form method="POST" action="{{ route('pins.update', ['device' => $pin->device->uuid, 'pin' => $pin->uuid]) }}" id="pinSettingsForm">
                         @csrf
                         @method('PUT')
 
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Pin Name</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                id="name" name="name" value="{{ old('name', $pin->name) }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <!-- Pin Name -->
+                            <div class="mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag me-2 gradient-icon"></i><span class="gradient-text">Pin Name</span>
+                            </label>
+                            <div class="input-group input-group-custom">
+                                <span class="input-group-text">
+                                        <i class="fas fa-microchip gradient-icon"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-custom @error('name') is-invalid @enderror" 
+                                           id="name" name="name" value="{{ old('name', $pin->name) }}"
+                                           placeholder="Enter pin name" required>
+                                @error('name')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <small class="form-text text-muted mt-2">Choose a descriptive name for your pin</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="pin_number" class="form-label">Pin Number</label>
-                            <select class="form-select @error('pin_number') is-invalid @enderror" 
-                                id="pin_number" name="pin_number" required>
-                                <option value="">Select GPIO Pin</option>
-                            </select>
-                            @error('pin_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <!-- Description -->
+                            <div class="mb-4" data-aos="fade-up" data-aos-delay="300">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left me-2 gradient-icon"></i><span class="gradient-text">Description</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-comment gradient-icon"></i>
+                                    </span>
+                                    <textarea class="form-control form-control-custom @error('description') is-invalid @enderror"
+                                              id="description" name="description" rows="3"
+                                              placeholder="Enter pin description">{{ old('description', $pin->description) }}</textarea>
+                                    @error('description')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <small class="form-text text-muted mt-2">Optional: Add a description for your pin</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="type" class="form-label">Pin Type</label>
-                            <select class="form-select @error('type') is-invalid @enderror" 
-                                id="type" name="type" required onchange="updateSettings()">
-                                <option value="">Select Pin Type</option>
-                                <option value="digital_output" {{ old('type', $pin->type) == 'digital_output' ? 'selected' : '' }}>
-                                    Digital Output (e.g. relay, LED)
-                                </option>
-                                <option value="digital_input" {{ old('type', $pin->type) == 'digital_input' ? 'selected' : '' }}>
-                                    Digital Input (e.g. button, switch)
-                                </option>
-                                <option value="analog_input" {{ old('type', $pin->type) == 'analog_input' ? 'selected' : '' }}>
-                                    Analog Input (e.g. sensors)
-                                </option>
-                                <option value="ph_sensor" {{ old('type', $pin->type) == 'ph_sensor' ? 'selected' : '' }}>
-                                    pH Sensor
-                                </option>
-                            </select>
-                            @error('type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <!-- Pin Type -->
+                            <div class="mb-4" data-aos="fade-up" data-aos-delay="400">
+                            <label for="type" class="form-label">
+                                <i class="fas fa-cog me-2 gradient-icon"></i><span class="gradient-text">Pin Type</span>
+                            </label>
+                            <div class="input-group input-group-custom">
+                                <span class="input-group-text">
+                                        <i class="fas fa-bolt gradient-icon"></i>
+                                </span>
+                                <select class="form-select form-control-custom @error('type') is-invalid @enderror" 
+                                            id="type" name="type" required onchange="updatePinNumbers()">
+                                    <option value="">Select Pin Type</option>
+                                    <option value="digital_output" {{ old('type', $pin->type) == 'digital_output' ? 'selected' : '' }}>
+                                        Digital Output (e.g. relay, LED)
+                                    </option>
+                                    <option value="digital_input" {{ old('type', $pin->type) == 'digital_input' ? 'selected' : '' }}>
+                                        Digital Input (e.g. button, switch)
+                                    </option>
+                                    <option value="analog_input" {{ old('type', $pin->type) == 'analog_input' ? 'selected' : '' }}>
+                                            Analog Input (e.g. basic sensors)
+                                    </option>
+                                    <option value="ph_sensor" {{ old('type', $pin->type) == 'ph_sensor' ? 'selected' : '' }}>
+                                        pH Sensor
+                                    </option>
+                                </select>
+                                @error('type')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                                <small class="form-text text-muted mt-2">Choose how this pin will be used</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <input type="text" class="form-control @error('settings.description') is-invalid @enderror" 
-                                id="description" name="settings[description]" 
-                                value="{{ old('settings.description', $pin->settings['description'] ?? '') }}">
+                            <!-- Pin Number -->
+                            <div class="mb-4" data-aos="fade-up" data-aos-delay="500" id="pinNumberGroup" style="display: none;">
+                            <label for="pin_number" class="form-label">
+                                    <i class="fas fa-hashtag me-2 gradient-icon"></i><span class="gradient-text">Pin Number</span>
+                            </label>
+                            <div class="input-group input-group-custom">
+                                <span class="input-group-text">
+                                        <i class="fas fa-plug gradient-icon"></i>
+                                </span>
+                                <select class="form-select form-control-custom @error('pin_number') is-invalid @enderror" 
+                                    id="pin_number" name="pin_number" required>
+                                        <option value="">Select Pin Number</option>
+                                </select>
+                                @error('pin_number')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                                <small class="form-text text-muted mt-2">Select the GPIO pin number on your device</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="icon" class="form-label">Icon</label>
-                            <select class="form-select @error('settings.icon') is-invalid @enderror" 
-                                id="icon" name="settings[icon]">
-                                <option value="">Select Icon</option>
-                                <option value="lightbulb" {{ ($pin->settings['icon'] ?? '') == 'lightbulb' ? 'selected' : '' }}>
-                                    💡 Lightbulb
-                                </option>
-                                <option value="water" {{ ($pin->settings['icon'] ?? '') == 'water' ? 'selected' : '' }}>
-                                    💧 Water/Pump
-                                </option>
-                                <option value="temperature-half" {{ ($pin->settings['icon'] ?? '') == 'temperature-half' ? 'selected' : '' }}>
-                                    🌡️ Temperature
-                                </option>
-                                <option value="vial" {{ ($pin->settings['icon'] ?? '') == 'vial' ? 'selected' : '' }}>
-                                    🧪 Chemical/pH
-                                </option>
-                                <option value="flask" {{ ($pin->settings['icon'] ?? '') == 'flask' ? 'selected' : '' }}>
-                                    🔬 TDS/PPM
-                                </option>
-                                <option value="wind" {{ ($pin->settings['icon'] ?? '') == 'wind' ? 'selected' : '' }}>
-                                    💨 Air/Oxygen
-                                </option>
-                            </select>
-                        </div>
+                            <!-- pH Sensor Settings -->
+                            <div class="mb-4" data-aos="fade-up" data-aos-delay="500" id="phSensorSettings" style="display: none;">
+                                <div class="card settings-card">
+                                <div class="card-body">
+                                        <h6 class="card-title mb-4">
+                                            <i class="fas fa-flask me-2"></i><span class="gradient-text">pH Sensor Settings</span>
+                                    </h6>
 
-                        <!-- Schedule Settings (for digital output) -->
-                        <div id="scheduleSettings" style="display: none;">
-                            <h6 class="mb-3">Schedule Settings</h6>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="useSchedule" 
-                                        name="settings[schedule][enabled]" value="1"
-                                        {{ isset($pin->settings['schedule']) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="useSchedule">
-                                        Enable Schedule
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="scheduleOn" class="form-label">Start Time</label>
-                                    <input type="time" class="form-control" id="scheduleOn" 
-                                        name="settings[schedule][on]"
-                                        value="{{ $pin->settings['schedule']['on'] ?? '' }}">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="duration" class="form-label">ON Duration (minutes)</label>
-                                    <input type="number" class="form-control" id="duration" 
-                                        name="settings[schedule][duration]"
-                                        value="{{ $pin->settings['schedule']['duration'] ?? '' }}"
-                                        placeholder="e.g. 5">
-                                    <small class="text-muted">How long the pin stays ON in each cycle</small>
-                                </div>
-                                <div class="col">
-                                    <label for="interval" class="form-label">Cycle Interval (minutes)</label>
-                                    <input type="number" class="form-control" id="interval" 
-                                        name="settings[schedule][interval]"
-                                        value="{{ $pin->settings['schedule']['interval'] ?? '' }}"
-                                        placeholder="e.g. 10">
-                                    <small class="text-muted">Total time for one ON/OFF cycle</small>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="cycleDuration" class="form-label">Cycle Duration (minutes)</label>
-                                    <input type="number" class="form-control" id="cycleDuration" 
-                                        name="settings[schedule][cycle_duration]"
-                                        value="{{ $pin->settings['schedule']['cycle_duration'] ?? '' }}"
-                                        placeholder="e.g. 30">
-                                    <small class="text-muted">How long the cycles should continue (e.g. 30 minutes)</small>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="repeatHourly" 
-                                        name="settings[schedule][repeat_hourly]" value="1"
-                                        {{ isset($pin->settings['schedule']['repeat_hourly']) && $pin->settings['schedule']['repeat_hourly'] ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="repeatHourly">
-                                        Repeat Schedule
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="mb-3" id="hourlyIntervalSection" style="display: none;">
-                                <label for="hourlyInterval" class="form-label">Repeat Every (minutes)</label>
-                                <input type="number" class="form-control" id="hourlyInterval" 
-                                    name="settings[schedule][hourly_interval]"
-                                    value="{{ $pin->settings['schedule']['hourly_interval'] ?? '' }}"
-                                    placeholder="e.g. 180 for 3 hours">
-                                <small class="text-muted">Enter how often the schedule should repeat (e.g. 180 for every 3 hours)</small>
-                            </div>
-                        </div>
-
-                        <!-- pH Sensor Settings -->
-                        <div id="phSensorSettings" style="display: none;">
-                            <h6 class="mb-3">pH Sensor Settings</h6>
-                            
-                            <div class="mb-3">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="useDefaultValues" 
-                                        onchange="toggleDefaultValues(this.checked)">
-                                    <label class="form-check-label" for="useDefaultValues">
-                                        Use Default Values
-                                    </label>
-                                </div>
-                            </div>
-
-                            <h6 class="mb-3">Calibration Points</h6>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">pH 4.0</span>
-                                        <input type="number" class="form-control" id="cal4" 
-                                            name="settings[calibration][4]"
-                                            value="{{ $pin->settings['calibration']['4'] ?? '' }}"
-                                            placeholder="Raw ADC value">
+                                        <!-- Calibration Points -->
+                                        <div class="mb-4">
+                                            <label class="form-label"><span class="gradient-text">Calibration Points</span></label>
+                                    <div class="form-check mb-3">
+                                                <input type="checkbox" class="form-check-input" id="use_default_values" 
+                                                       name="settings[ph_sensor][use_default_values]"
+                                                       {{ isset($pin->settings['ph_sensor']['use_default_values']) && $pin->settings['ph_sensor']['use_default_values'] ? 'checked' : '' }}
+                                                       onchange="toggleCalibrationInputs(this.checked)">
+                                                <label class="form-check-label" for="use_default_values">
+                                                    Use Default Values
+                                        </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">pH 7.0</span>
-                                        <input type="number" class="form-control" id="cal7" 
-                                            name="settings[calibration][7]"
-                                            value="{{ $pin->settings['calibration']['7'] ?? '' }}"
-                                            placeholder="Raw ADC value">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">pH 10.0</span>
-                                        <input type="number" class="form-control" id="cal10" 
-                                            name="settings[calibration][10]"
-                                            value="{{ $pin->settings['calibration']['10'] ?? '' }}"
-                                            placeholder="Raw ADC value">
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Samples</span>
-                                        <input type="number" class="form-control" id="samples" 
-                                            name="settings[samples]"
-                                            value="{{ $pin->settings['samples'] ?? 10 }}"
-                                            min="1" max="100" placeholder="10">
-                                    </div>
-                                    <small class="text-muted">Number of samples to average (1-100)</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Interval</span>
-                                        <input type="number" class="form-control" id="interval" 
-                                            name="settings[interval]"
-                                            value="{{ $pin->settings['interval'] ?? 1000 }}"
-                                            min="100" placeholder="1000">
-                                        <span class="input-group-text">ms</span>
-                                    </div>
-                                    <small class="text-muted">Reading interval (min 100ms)</small>
-                                </div>
-                            </div>
-
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> <strong>Important:</strong> For pH sensors, use ADC1 pins (GPIO32-39) for better accuracy.<br>
-                                Recommended pins: GPIO36, GPIO39, GPIO34, or GPIO35.
-                            </div>
-                        </div>
-
-                        <!-- Alert Settings (for all pin types) -->
-                        <div id="alertSettings">
-                            <h6 class="mb-3">Telegram Alert Settings</h6>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="useAlerts" 
-                                        name="settings[alerts][enabled]" value="1"
-                                        {{ isset($pin->settings['alerts']['enabled']) && $pin->settings['alerts']['enabled'] ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="useAlerts">
-                                        Enable Telegram Alerts
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="telegramChatId" class="form-label">Telegram Chat ID</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="telegramChatId" 
-                                        name="settings[alerts][telegram_chat_id]" 
-                                        placeholder="e.g. 123456789"
-                                        value="{{ $pin->settings['alerts']['telegram_chat_id'] ?? '' }}">
-                                    <button type="button" class="btn btn-outline-primary" onclick="testTelegramConnection()">
-                                        Test Connection
-                                    </button>
-                                </div>
-                                <small class="text-muted">This is required to receive alerts on Telegram</small>
-                                <div id="telegramTestResult" class="mt-2" style="display: none;"></div>
-                            </div>
-
-                            <!-- Digital Input Alert Settings -->
-                            <div id="digitalInputAlerts" style="display: none;">
-                                <div class="mb-3">
-                                    <label class="form-label">Alert on State Change</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
-                                            name="settings[alerts][on_high]" value="1" 
-                                            {{ isset($pin->settings['alerts']['on_high']) && $pin->settings['alerts']['on_high'] ? 'checked' : '' }}>
-                                        <label class="form-check-label">Alert when pin goes HIGH</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
-                                            name="settings[alerts][on_low]" value="1"
-                                            {{ isset($pin->settings['alerts']['on_low']) && $pin->settings['alerts']['on_low'] ? 'checked' : '' }}>
-                                        <label class="form-check-label">Alert when pin goes LOW</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Digital Output Alert Settings -->
-                            <div id="digitalOutputAlerts" style="display: none;">
-                                <div class="mb-3">
-                                    <label class="form-label">Alert on State Change</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
-                                            name="settings[alerts][on_turn_on]" value="1"
-                                            {{ isset($pin->settings['alerts']['on_turn_on']) && $pin->settings['alerts']['on_turn_on'] ? 'checked' : '' }}>
-                                        <label class="form-check-label">Alert when turned ON</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
-                                            name="settings[alerts][on_turn_off]" value="1"
-                                            {{ isset($pin->settings['alerts']['on_turn_off']) && $pin->settings['alerts']['on_turn_off'] ? 'checked' : '' }}>
-                                        <label class="form-check-label">Alert when turned OFF</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Analog Input Alert Settings -->
-                            <div id="analogInputAlerts" style="display: none;">
-                                <div class="row mb-3">
-                                    <div class="col">
-                                        <label for="minThreshold" class="form-label">Min Threshold</label>
-                                        <input type="number" step="0.1" class="form-control" id="minThreshold" 
-                                            name="settings[alerts][min_threshold]"
-                                            value="{{ $pin->settings['alerts']['min_threshold'] ?? '' }}">
-                                        <div class="form-check mt-2">
-                                            <input class="form-check-input" type="checkbox" 
-                                                name="settings[alerts][alert_below_min]" value="1"
-                                                {{ isset($pin->settings['alerts']['alert_below_min']) && $pin->settings['alerts']['alert_below_min'] ? 'checked' : '' }}>
-                                            <label class="form-check-label">Alert when below min threshold</label>
+                                            <div id="calibrationInputs">
+                                                <!-- pH 4.0 -->
+                                                <div class="mb-3">
+                                                    <label class="form-label"><span class="gradient-text">pH 4.0</span></label>
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                            <i class="fas fa-tint gradient-icon"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                               name="settings[ph_sensor][ph4_value]"
+                                                               id="ph4_value"
+                                                               placeholder="Raw ADC value"
+                                                               value="{{ isset($pin->settings['ph_sensor']['use_default_values']) && $pin->settings['ph_sensor']['use_default_values'] ? '4090' : ($pin->settings['ph_sensor']['ph4_value'] ?? '') }}">
+                                            </div>
                                         </div>
-                                        <small class="text-muted" id="sensorThresholdHelp">
-                                            <span id="phHelp" style="display: none;">For pH sensor: Enter value in pH units (0-14)</span>
-                                            <span id="tempHelp" style="display: none;">For temperature: Enter value in °C (e.g. 25.0)</span>
-                                            <span id="humidHelp" style="display: none;">For humidity: Enter percentage (0-100)</span>
-                                            <span id="analogHelp" style="display: none;">For analog sensor: Enter raw value (0-4095)</span>
-                                        </small>
-                                    </div>
-                                    <div class="col">
-                                        <label for="maxThreshold" class="form-label">Max Threshold</label>
-                                        <input type="number" step="0.1" class="form-control" id="maxThreshold" 
-                                            name="settings[alerts][max_threshold]"
-                                            value="{{ $pin->settings['alerts']['max_threshold'] ?? '' }}">
-                                        <div class="form-check mt-2">
-                                            <input class="form-check-input" type="checkbox" 
-                                                name="settings[alerts][alert_above_max]" value="1"
-                                                {{ isset($pin->settings['alerts']['alert_above_max']) && $pin->settings['alerts']['alert_above_max'] ? 'checked' : '' }}>
-                                            <label class="form-check-label">Alert when above max threshold</label>
+
+                                                <!-- pH 7.0 -->
+                                                <div class="mb-3">
+                                                    <label class="form-label"><span class="gradient-text">pH 7.0</span></label>
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                            <i class="fas fa-tint gradient-icon"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                               name="settings[ph_sensor][ph7_value]"
+                                                               id="ph7_value"
+                                                               placeholder="Raw ADC value"
+                                                               value="{{ isset($pin->settings['ph_sensor']['use_default_values']) && $pin->settings['ph_sensor']['use_default_values'] ? '3140' : ($pin->settings['ph_sensor']['ph7_value'] ?? '') }}">
+                                            </div>
+                                        </div>
+
+                                                <!-- pH 10.0 -->
+                                                <div class="mb-3">
+                                                    <label class="form-label"><span class="gradient-text">pH 10.0</span></label>
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                            <i class="fas fa-tint gradient-icon"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                               name="settings[ph_sensor][ph10_value]"
+                                                               id="ph10_value"
+                                                               placeholder="Raw ADC value"
+                                                               value="{{ isset($pin->settings['ph_sensor']['use_default_values']) && $pin->settings['ph_sensor']['use_default_values'] ? '2350' : ($pin->settings['ph_sensor']['ph10_value'] ?? '') }}">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                    </div>
 
-                                <!-- Sensor Type Specific Guidelines -->
-                                <div class="alert alert-info" id="phThresholdInfo" style="display: none;">
-                                    <i class="fas fa-info-circle"></i> <strong>pH Sensor Guide:</strong><br>
-                                    - Normal pH range: 6.0 - 7.0<br>
-                                    - Values below 7 are acidic, above 7 are basic/alkaline<br>
-                                    - Example: Set Min = 5.5 and Max = 7.5 to get alerts when pH is too acidic or too basic
-                                </div>
+                                        <!-- Reading Settings -->
+                                        <div class="mb-3">
+                                            <label class="form-label"><span class="gradient-text">Reading Settings</span></label>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-layer-group gradient-icon"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                               name="settings[ph_sensor][samples]"
+                                                               placeholder="Number of samples"
+                                                               value="{{ $pin->settings['ph_sensor']['samples'] ?? '10' }}">
+                                            </div>
+                                                    <small class="form-text text-muted">Number of samples to average (1-100)</small>
+                                        </div>
+                                                <div class="col-md-6">
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-clock gradient-icon"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                               name="settings[ph_sensor][interval]"
+                                                               placeholder="Reading interval"
+                                                               value="{{ $pin->settings['ph_sensor']['interval'] ?? '1000' }}">
+                                                        <span class="input-group-text bg-light">ms</span>
+                                            </div>
+                                                    <small class="form-text text-muted">Reading interval (min 100ms)</small>
+                                                </div>
+                                        </div>
+                                    </div>
 
-                                <div class="alert alert-info" id="dhtThresholdInfo" style="display: none;">
-                                    <i class="fas fa-info-circle"></i> <strong>Temperature & Humidity Guide:</strong><br>
-                                    - Temperature typical range: 20°C - 30°C<br>
-                                    - Humidity typical range: 40% - 70%<br>
-                                    - Example for temperature: Min = 18°C, Max = 32°C<br>
-                                    - Example for humidity: Min = 30%, Max = 80%
+                                        <!-- Important Note -->
+                                        <div class="alert alert-info mt-3 mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Important:</strong> For pH sensors, use ADC1 pins (GPIO32-39) for better accuracy. Recommended pins: GPIO36, GPIO39, GPIO34, or GPIO35.
+                                    </div>
                                 </div>
-
-                                <div class="alert alert-info" id="analogThresholdInfo" style="display: none;">
-                                    <i class="fas fa-info-circle"></i> <strong>Analog Sensor Guide:</strong><br>
-                                    - Raw ADC values range: 0 - 4095<br>
-                                    - Higher value usually means stronger/higher reading<br>
-                                    - Set thresholds based on your sensor's specifications
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="messageTemplate" class="form-label">Message Template</label>
-                                <div class="mb-2">
-                                    <select class="form-select" id="messageTemplate" onchange="updateAlertMessage()">
-                                        <option value="">Select Template</option>
-                                        <option value="basic">Basic Status</option>
-                                        <option value="detailed">Detailed Status</option>
-                                        <option value="schedule">Schedule Status</option>
-                                        <option value="threshold">Threshold Alert</option>
-                                        <option value="custom">Custom Template</option>
-                                    </select>
-                                </div>
-                                <textarea class="form-control" id="alertMessage" 
-                                    name="settings[alerts][message_template]" rows="3" 
-                                    placeholder="e.g. {device_name} - {pin_name} is now {status}">{{ $pin->settings['alerts']['message_template'] ?? '' }}</textarea>
-                                <small class="text-muted">
-                                    Available variables: {device_name}, {pin_name}, {status}, {value}, {threshold}, {time}, {date}
-                                </small>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Update Pin
-                            </button>
-                            
-                            <button type="button" class="btn btn-danger" onclick="confirmDelete()">
-                                <i class="fas fa-trash"></i> Delete Pin
-                            </button>
-                        </div>
-                    </form>
+                            <!-- Additional Settings -->
+                            <div class="mt-5" data-aos="fade-up" data-aos-delay="600">
+                                <h5 class="gradient-text mb-4">
+                                    <i class="fas fa-cogs me-2"></i>Additional Settings
+                                </h5>
 
-                    <form id="delete-form" action="{{ route('pins.destroy', [$device, $pin]) }}" method="POST" class="d-none">
-                        @csrf
-                        @method('DELETE')
-                    </form>
+                                    <!-- Schedule Settings Card -->
+                                    <div class="card settings-card mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title mb-4">
+                                                        <i class="fas fa-clock me-2"></i><span class="gradient-text">Schedule Settings</span>
+                                            </h6>
+
+                                            <!-- Enable Schedule Toggle -->
+                                            <div class="form-check mb-3">
+                                                <input type="checkbox" class="form-check-input" id="useSchedule" 
+                                                        name="settings[schedule][enabled]" 
+                                                        {{ isset($pin->settings['schedule']['enabled']) && $pin->settings['schedule']['enabled'] ? 'checked' : '' }}
+                                                        onchange="toggleScheduleSettings(this.checked)">
+                                                <label class="form-check-label" for="useSchedule">
+                                                    Enable Schedule
+                                        </label>
+                                    </div>
+
+                                    <!-- Schedule Settings Content -->
+                                    <div id="scheduleSettingsContent">
+                                                <!-- Timing Settings -->
+                                        <div class="mb-4">
+                                            <label class="form-label">
+                                                <span class="gradient-text">
+                                                            <i class="fas fa-clock me-2"></i>Timing Settings
+                                                        </span>
+                                                    </label>
+                                                    <div class="card settings-card">
+                                                        <div class="card-body">
+                                                            <div class="row g-4">
+                                                                <!-- Start Time -->
+                                                                <div class="col-lg-6">
+                                                                    <label class="form-label">
+                                                                        <span class="gradient-text">
+                                                                            <i class="fas fa-play me-2"></i>Start Time
+                                                </span>
+                                            </label>
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                                            <i class="fas fa-clock gradient-icon"></i>
+                                                </span>
+                                                                        <input type="time" class="form-control form-control-custom"
+                                                                                id="start_time" 
+                                                                                name="settings[schedule][start_time]"
+                                                                                value="{{ $pin->settings['schedule']['start_time'] ?? '' }}">
+                                            </div>
+                                        </div>
+
+                                                                <!-- ON Duration -->
+                                                                <div class="col-lg-6">
+                                            <label class="form-label">
+                                                <span class="gradient-text">
+                                                                            <i class="fas fa-hourglass-half me-2"></i>ON Duration
+                                                </span>
+                                            </label>
+                                                                    <div class="input-group input-group-custom">
+                                                                        <span class="input-group-text">
+                                                                            <i class="fas fa-hourglass-start gradient-icon"></i>
+                                                                        </span>
+                                                                        <input type="number" class="form-control form-control-custom"
+                                                                                id="on_duration" 
+                                                                                name="settings[schedule][on_duration]"
+                                                                                placeholder="e.g. 5"
+                                                                                value="{{ $pin->settings['schedule']['on_duration'] ?? '' }}">
+                                                                        <span class="input-group-text">minutes</span>
+                                                        </div>
+                                                                    <small class="form-text text-muted">How long the pin stays ON in each cycle</small>
+                                        </div>
+
+                                                                <!-- Cycle Interval -->
+                                                                <div class="col-lg-6">
+                                            <label class="form-label">
+                                                <span class="gradient-text">
+                                                                            <i class="fas fa-sync me-2"></i>Cycle Interval
+                                                </span>
+                                            </label>
+                                                                    <div class="input-group input-group-custom">
+                                                                        <span class="input-group-text">
+                                                                            <i class="fas fa-sync gradient-icon"></i>
+                                                                        </span>
+                                                                        <input type="number" class="form-control form-control-custom"
+                                                                                id="cycle_interval" 
+                                                                                name="settings[schedule][cycle_interval]"
+                                                                                placeholder="e.g. 10"
+                                                                                value="{{ $pin->settings['schedule']['cycle_interval'] ?? '' }}">
+                                                                        <span class="input-group-text">minutes</span>
+                                                        </div>
+                                                                    <small class="form-text text-muted">Total time for one ON/OFF cycle</small>
+                                        </div>
+
+                                                                <!-- Cycle Duration -->
+                                                        <div class="col-lg-6">
+                                                            <label class="form-label">
+                                                                <span class="gradient-text">
+                                                                            <i class="fas fa-stopwatch me-2"></i>Cycle Duration
+                                                                </span>
+                                                            </label>
+                                                            <div class="input-group input-group-custom">
+                                                                <span class="input-group-text">
+                                                                            <i class="fas fa-stopwatch gradient-icon"></i>
+                                                                </span>
+                                                                        <input type="number" class="form-control form-control-custom"
+                                                                                id="cycle_duration" 
+                                                                                name="settings[schedule][cycle_duration]"
+                                                                                placeholder="e.g. 30"
+                                                                                value="{{ $pin->settings['schedule']['cycle_duration'] ?? '' }}">
+                                                                        <span class="input-group-text">minutes</span>
+                                                            </div>
+                                                                    <small class="form-text text-muted">How long the cycles should continue</small>
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Repeat Settings -->
+                                                <div class="mb-4">
+                                                            <label class="form-label">
+                                                                <span class="gradient-text">
+                                                            <i class="fas fa-redo me-2"></i>Repeat Settings
+                                                                </span>
+                                                            </label>
+                                                    <div class="card settings-card">
+                                                        <div class="card-body">
+                                                            <div class="form-check mb-3">
+                                                                <input type="checkbox" class="form-check-input" id="repeatHourly" 
+                                                                        name="settings[schedule][repeat_hourly]" value="1"
+                                                                        {{ isset($pin->settings['schedule']['repeat_hourly']) && $pin->settings['schedule']['repeat_hourly'] ? 'checked' : '' }}
+                                                                        onchange="toggleRepeatSettings(this.checked)">
+                                                                <label class="form-check-label" for="repeatHourly">
+                                                                    Enable Schedule Repeat
+                                                                </label>
+                                                            </div>
+
+                                                            <div id="repeatSettingsContent">
+                                                            <div class="input-group input-group-custom">
+                                                                <span class="input-group-text">
+                                                                        <i class="fas fa-redo gradient-icon"></i>
+                                                                </span>
+                                                                    <input type="number" class="form-control form-control-custom" 
+                                                                            id="hourlyInterval" name="settings[schedule][hourly_interval]"
+                                                                            value="{{ $pin->settings['schedule']['hourly_interval'] ?? '' }}"
+                                                                            placeholder="e.g. 180 for 3 hours">
+                                                                    <span class="input-group-text">minutes</span>
+                                                            </div>
+                                                                <small class="form-text text-muted">Enter how often the schedule should repeat</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+
+                                                <!-- Schedule Info -->
+                                                <div class="alert alert-info mt-4">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Schedule Guide:</strong><br>
+                                                    - Set start time when the schedule begins<br>
+                                                    - ON Duration: How long the pin stays ON<br>
+                                                    - Cycle Interval: Total time for one ON/OFF cycle<br>
+                                                    - Cycle Duration: Total running time of all cycles
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    <!-- Alert Settings -->
+                                    <div class="card settings-card mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title mb-4">Alert Settings</h6>
+                                            
+                                            <!-- Telegram Alert Settings -->
+                                            <div class="mb-4">
+                                                <label class="form-label d-block">Telegram Alert Settings</label>
+                                                <div class="form-check mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="enable_telegram" 
+                                                           name="settings[alerts][enabled]" 
+                                                           {{ isset($pin->settings['alerts']['enabled']) && $pin->settings['alerts']['enabled'] ? 'checked' : '' }}
+                                                           onchange="toggleTelegramSettings(this.checked)">
+                                                    <label class="form-check-label" for="enable_telegram">
+                                                        Enable Telegram Alerts
+                                            </label>
+                                                </div>
+
+                                                <div id="telegramSettings" class="{{ isset($pin->settings['alerts']['enabled']) && $pin->settings['alerts']['enabled'] ? '' : 'd-none' }}">
+                                                    <!-- Telegram Chat ID -->
+                                                    <div class="mb-3">
+                                                        <label for="telegram_chat_id" class="form-label">Telegram Chat ID</label>
+                                                        <div class="input-group input-group-custom">
+                                                            <span class="input-group-text">
+                                                                <i class="fab fa-telegram gradient-icon"></i>
+                                                </span>
+                                                            <input type="text" class="form-control form-control-custom"
+                                                                   id="telegram_chat_id" 
+                                                                   name="settings[alerts][telegram_chat_id]"
+                                                                   value="{{ $pin->settings['alerts']['telegram_chat_id'] ?? '' }}"
+                                                                   placeholder="e.g. 123456789">
+                                                            <button type="button" class="btn btn-outline-primary" onclick="testTelegramConnection()">
+                                                                Test Connection
+                                                            </button>
+                                                        </div>
+                                                        <small class="form-text text-muted">This is required to receive alerts on Telegram</small>
+                                                    </div>
+
+                                                    <!-- Alert on State Change -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label d-block">Alert on State Change</label>
+                                                        <div class="form-check mb-2">
+                                                            <input type="checkbox" class="form-check-input" 
+                                                                   id="alert_on_high" 
+                                                                   name="settings[alerts][on_high]"
+                                                                   {{ isset($pin->settings['alerts']['on_high']) && $pin->settings['alerts']['on_high'] ? 'checked' : '' }}>
+                                                            <label class="form-check-label" for="alert_on_high">
+                                                                Alert when turned ON
+                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input" 
+                                                                   id="alert_on_low" 
+                                                                   name="settings[alerts][on_low]"
+                                                                   {{ isset($pin->settings['alerts']['on_low']) && $pin->settings['alerts']['on_low'] ? 'checked' : '' }}>
+                                                            <label class="form-check-label" for="alert_on_low">
+                                                                Alert when turned OFF
+                                                            </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Message Template -->
+                                                    <div class="mb-3">
+                                                        <label for="message_template" class="form-label">Message Template</label>
+                                                        <div class="mb-2">
+                                                            <select class="form-select form-control-custom" id="template_selector" onchange="updateMessageTemplate(this.value)">
+                                                            <option value="">Select Template</option>
+                                                                <option value="basic_status">Basic Status</option>
+                                                                <option value="detailed_status">Detailed Status</option>
+                                                                <option value="schedule_status">Schedule Status</option>
+                                                                <option value="threshold_alert">Threshold Alert</option>
+                                                            <option value="custom">Custom Template</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="input-group input-group-custom">
+                                                        <span class="input-group-text">
+                                                                <i class="fas fa-envelope gradient-icon"></i>
+                                                        </span>
+                                                            <textarea class="form-control form-control-custom"
+                                                                      id="message_template" 
+                                                                      name="settings[alerts][message_template]"
+                                                                      rows="3"
+                                                                      placeholder="e.g. {device_name} - {pin_name} is now {status}">{{ $pin->settings['alerts']['message_template'] ?? '{device_name} - {pin_name} is now {status}' }}</textarea>
+                                                    </div>
+                                                        <small class="form-text text-muted">
+                                                        Available variables: {device_name}, {pin_name}, {status}, {value}, {threshold}, {time}, {date}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-flex gap-2 mt-5" data-aos="fade-up" data-aos-delay="700">
+                                <button type="submit" class="btn btn-primary flex-grow-1" onclick="submitForm(event)">
+                                    <i class="fas fa-save me-2"></i>Update Pin
+                                </button>
+                                <a href="{{ route('devices.show', $pin->device) }}" class="btn btn-light">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Delete Pin -->
+                        <div class="mt-5 pt-4 border-top" data-aos="fade-up" data-aos-delay="800">
+                            <h5 class="text-danger mb-4">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
+                            </h5>
+                            <form method="POST" action="{{ route('pins.destroy', ['device' => $pin->device->uuid, 'pin' => $pin->uuid]) }}" 
+                                  id="deletePinForm">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('deletePinForm')">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete Pin
+                                </button>
+                            </form>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    @endcomponent
+@endsection
+
+@push('styles')
+<link href="{{ asset('css/projects.css') }}" rel="stylesheet">
+<style>
+.gradient-icon {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.input-group-custom {
+    border-radius: 12px;
+    border: 1px solid rgba(0, 191, 166, 0.1);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.input-group-custom:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(0, 191, 166, 0.1);
+}
+
+.form-control-custom {
+    border: none;
+    padding: 0.75rem 1rem;
+}
+
+.form-control-custom:focus {
+    box-shadow: none;
+}
+
+.input-group-text {
+    background: transparent;
+    border: none;
+    padding-left: 1.25rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.form-text {
+    color: #6c757d;
+}
+
+.settings-card {
+    border: 1px solid rgba(0, 191, 166, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.settings-card .card-title {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(0, 191, 166, 0.25);
+}
+
+/* Animasi untuk Settings Content */
+#scheduleSettingsContent {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, margin 0.3s ease-in-out;
+}
+
+#scheduleSettingsContent.show {
+    max-height: 2000px; /* Sesuaikan dengan tinggi maksimum konten */
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+#repeatSettingsContent {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, margin 0.3s ease-in-out;
+}
+
+#repeatSettingsContent.show {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+.fade-scale {
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.fade-scale.show {
+    transform: scale(1);
+    opacity: 1;
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>
-// Define available pins for each type
-const pinTypes = {
-    digital_output: [2, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33],
-    digital_input: [2, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 39],
-    analog_input: [32, 33, 34, 35, 36, 39],
-    ph_sensor: [32, 33, 34, 35, 36, 39]
-};
-
-// Store current pin number
+const pinCapabilities = @json(App\Models\EspPin::getAvailablePins());
 const currentPinNumber = {{ $pin->pin_number }};
 
-// Store used pin numbers for the current device (excluding current pin)
-const usedPins = @json($device->pins->where('id', '!=', $pin->id)->pluck('pin_number')->toArray());
-
 function updatePinNumbers() {
-    const type = document.getElementById('type').value;
-    const pinSelect = document.getElementById('pin_number');
+    const typeSelect = document.getElementById('type');
+    const pinNumberSelect = document.getElementById('pin_number');
+    const pinNumberGroup = document.getElementById('pinNumberGroup');
+    const phSensorSettings = document.getElementById('phSensorSettings');
+    const selectedType = typeSelect.value;
     
     // Clear current options
-    pinSelect.innerHTML = '<option value="">Select GPIO Pin</option>';
-    
-    if (type) {
-        // Get available pins for selected type
-        const availablePins = pinTypes[type];
-        
-        // Add options for available pins
+    pinNumberSelect.innerHTML = '<option value="">Select Pin Number</option>';
+
+    // Hide pin number select if no type is selected
+    if (!selectedType) {
+        pinNumberGroup.style.display = 'none';
+        phSensorSettings.style.display = 'none';
+        return;
+    }
+
+    // Show pin number select
+    pinNumberGroup.style.display = 'block';
+
+    // Show/hide pH sensor settings
+    phSensorSettings.style.display = selectedType === 'ph_sensor' ? 'block' : 'none';
+
+    // Map ph_sensor to analog_input since they use the same pins
+    const capability = selectedType === 'ph_sensor' ? 'analog_input' : selectedType;
+
+    // Filter pins based on capability
+    const availablePins = pinCapabilities.filter(pin => 
+        pin.capabilities.includes(capability)
+    );
+
+    // Add filtered pins to select
         availablePins.forEach(pin => {
-            // Include pin if it's the current pin or not used by other pins
-            if (pin === currentPinNumber || !usedPins.includes(pin)) {
                 const option = document.createElement('option');
-                option.value = pin;
-                option.textContent = `GPIO${pin}${pin >= 34 ? ' (Input Only)' : ''}`;
-                option.selected = pin === currentPinNumber;
-                pinSelect.appendChild(option);
-            }
-        });
-
-        // If current pin is not valid for this type, show warning
-        if (!availablePins.includes(currentPinNumber)) {
-            alert('Warning: Current pin number is not recommended for selected pin type. Please select a different pin.');
+        option.value = pin.number;
+        option.textContent = `GPIO${pin.number}`;
+        if (pin.number == currentPinNumber) {
+            option.selected = true;
         }
+        pinNumberSelect.appendChild(option);
+    });
+}
+
+function toggleCalibrationInputs(useDefault) {
+    const ph4Input = document.getElementById('ph4_value');
+    const ph7Input = document.getElementById('ph7_value');
+    const ph10Input = document.getElementById('ph10_value');
+
+    // Default values
+    const defaultValues = {
+        ph4: 4090,
+        ph7: 3140,
+        ph10: 2350
+    };
+
+    if (useDefault) {
+        // Set default values when checkbox is checked
+        ph4Input.value = defaultValues.ph4;
+        ph7Input.value = defaultValues.ph7;
+        ph10Input.value = defaultValues.ph10;
+    } else {
+        // Clear values when checkbox is unchecked
+        ph4Input.value = '';
+        ph7Input.value = '';
+        ph10Input.value = '';
     }
 }
 
-function updateSettings() {
-    const pinType = document.getElementById('type').value;
-    const scheduleSettings = document.getElementById('scheduleSettings');
-    const digitalOutputAlerts = document.getElementById('digitalOutputAlerts');
-    const analogInputAlerts = document.getElementById('analogInputAlerts');
-    const phSensorSettings = document.getElementById('phSensorSettings');
-    
-    // Get all threshold info elements
-    const phThresholdInfo = document.getElementById('phThresholdInfo');
-    const dhtThresholdInfo = document.getElementById('dhtThresholdInfo');
-    const analogThresholdInfo = document.getElementById('analogThresholdInfo');
-    
-    // Get all help text spans
-    const phHelp = document.getElementById('phHelp');
-    const tempHelp = document.getElementById('tempHelp');
-    const humidHelp = document.getElementById('humidHelp');
-    const analogHelp = document.getElementById('analogHelp');
-    
-    // Hide all settings and info elements first
-    scheduleSettings.style.display = 'none';
-    digitalOutputAlerts.style.display = 'none';
-    analogInputAlerts.style.display = 'none';
-    phSensorSettings.style.display = 'none';
-    phThresholdInfo.style.display = 'none';
-    dhtThresholdInfo.style.display = 'none';
-    analogThresholdInfo.style.display = 'none';
-    
-    // Hide all help text
-    phHelp.style.display = 'none';
-    tempHelp.style.display = 'none';
-    humidHelp.style.display = 'none';
-    analogHelp.style.display = 'none';
-    
-    // Show relevant settings based on pin type
-    switch(pinType) {
-        case 'digital_output':
-            scheduleSettings.style.display = 'block';
-            digitalOutputAlerts.style.display = 'block';
-            break;
-        case 'digital_input':
-            break;
-        case 'analog_input':
-            analogInputAlerts.style.display = 'block';
-            analogThresholdInfo.style.display = 'block';
-            analogHelp.style.display = 'block';
-            
-            // Remove min/max restrictions for analog input
-            document.getElementById('minThreshold').removeAttribute('min');
-            document.getElementById('minThreshold').removeAttribute('max');
-            document.getElementById('maxThreshold').removeAttribute('min');
-            document.getElementById('maxThreshold').removeAttribute('max');
-            break;
-        case 'ph_sensor':
-            phSensorSettings.style.display = 'block';
-            analogInputAlerts.style.display = 'block';
-            phThresholdInfo.style.display = 'block';
-            phHelp.style.display = 'block';
-            
-            // Set min/max for pH
-            document.getElementById('minThreshold').setAttribute('min', '0');
-            document.getElementById('minThreshold').setAttribute('max', '14');
-            document.getElementById('maxThreshold').setAttribute('min', '0');
-            document.getElementById('maxThreshold').setAttribute('max', '14');
-            break;
-        case 'dht_temperature':
-            analogInputAlerts.style.display = 'block';
-            dhtThresholdInfo.style.display = 'block';
-            tempHelp.style.display = 'block';
-            
-            // Set reasonable limits for temperature
-            document.getElementById('minThreshold').setAttribute('min', '0');
-            document.getElementById('minThreshold').setAttribute('max', '50');
-            document.getElementById('maxThreshold').setAttribute('min', '0');
-            document.getElementById('maxThreshold').setAttribute('max', '50');
-            break;
-        case 'dht_humidity':
-            analogInputAlerts.style.display = 'block';
-            dhtThresholdInfo.style.display = 'block';
-            humidHelp.style.display = 'block';
-            
-            // Set limits for humidity percentage
-            document.getElementById('minThreshold').setAttribute('min', '0');
-            document.getElementById('minThreshold').setAttribute('max', '100');
-            document.getElementById('maxThreshold').setAttribute('min', '0');
-            document.getElementById('maxThreshold').setAttribute('max', '100');
-            break;
-    }
-
-    // Update available pin numbers based on type
-    updatePinNumbers();
-}
-
-// Call updateSettings on page load
+// Run on page load to handle initial values
 document.addEventListener('DOMContentLoaded', function() {
-    updateSettings();
+    updatePinNumbers();
     
-    // Setup other event listeners
-    const repeatHourly = document.getElementById('repeatHourly');
-    const hourlyIntervalSection = document.getElementById('hourlyIntervalSection');
-    
-    if (repeatHourly) {
-        repeatHourly.addEventListener('change', function() {
-            hourlyIntervalSection.style.display = this.checked ? 'block' : 'none';
-        });
-        
-        // Trigger change event on load
-        repeatHourly.dispatchEvent(new Event('change'));
+    // Initialize pH sensor settings if needed
+    const typeSelect = document.getElementById('type');
+    if (typeSelect.value === 'ph_sensor') {
+        document.getElementById('phSensorSettings').style.display = 'block';
     }
-
-    // Add event listener for pin type changes
-    document.getElementById('type').addEventListener('change', updateSettings);
 });
 
-function confirmDelete() {
-    if (confirm('Are you sure you want to delete this pin? This action cannot be undone.')) {
-        document.getElementById('delete-form').submit();
-    }
-}
-
-function updateAlertMessage() {
-    const select = document.getElementById('messageTemplate');
-    const textarea = document.getElementById('alertMessage');
-    
-    const templates = {
-        'basic': '🔔 {device_name}\n{pin_name} is now {status}',
-        'detailed': '🔔 Device: {device_name}\nPin: {pin_name}\nStatus: {status}\nValue: {value}\nTime: {time}',
-        'schedule': '⏰ Scheduled Update\nDevice: {device_name}\n{pin_name} has been {status}\nTime: {time}\nDate: {date}',
-        'threshold': '⚠️ Alert: {pin_name}\nCurrent Value: {value}\nThreshold: {threshold}\nDevice: {device_name}\nTime: {time}',
-        'custom': textarea.value // preserve current custom template if any
-    };
-    
-    if (select.value && select.value !== 'custom') {
-        textarea.value = templates[select.value];
+function toggleTelegramSettings(enabled) {
+    const telegramSettings = document.getElementById('telegramSettings');
+    if (enabled) {
+        telegramSettings.classList.remove('d-none');
+    } else {
+        telegramSettings.classList.add('d-none');
     }
 }
 
 function testTelegramConnection() {
-    const chatId = document.getElementById('telegramChatId').value;
-    const resultDiv = document.getElementById('telegramTestResult');
-    
+    const chatId = document.getElementById('telegram_chat_id').value;
     if (!chatId) {
-        resultDiv.innerHTML = '<div class="alert alert-warning">Please enter a Telegram Chat ID first</div>';
-        resultDiv.style.display = 'block';
+        notifications.warning('Please enter a Telegram Chat ID first');
         return;
     }
 
-    // Show loading state
-    resultDiv.innerHTML = '<div class="alert alert-info">Testing connection...</div>';
-    resultDiv.style.display = 'block';
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Testing...';
 
-    // Make AJAX call to test connection
-    fetch(`/telegram/test-connection/${chatId}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            resultDiv.innerHTML = '<div class="alert alert-success">✅ Connection successful! You should receive a test message on Telegram.</div>';
+    axios.post('/telegram/test', { chat_id: chatId })
+        .then(response => {
+            notifications.success('Test message sent successfully!');
+        })
+        .catch(error => {
+            if (error.response && error.response.data && error.response.data.message) {
+                notifications.error('Failed to send test message. Please check your Chat ID.');
         } else {
-            resultDiv.innerHTML = '<div class="alert alert-danger">❌ Connection failed. Please verify your Chat ID and try again.</div>';
-        }
-    })
-    .catch(error => {
-        resultDiv.innerHTML = '<div class="alert alert-danger">❌ Error testing connection. Please try again.</div>';
-        console.error('Error:', error);
-    });
+                notifications.error('Error testing connection. Please try again.');
+            }
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        });
 }
 
-function toggleDefaultValues(checked) {
-    const defaultValues = {
-        'cal4': 4090,    // pH 4.0
-        'cal7': 3140,    // pH 7.0
-        'cal10': 2350,   // pH 10.0
-        'samples': 10,   // Default samples
-        'interval': 1000 // Default interval
-    };
+function updateMessageTemplate(templateType) {
+    const messageTemplate = document.getElementById('message_template');
     
-    Object.entries(defaultValues).forEach(([inputId, value]) => {
-        const input = document.getElementById(inputId);
-        
-        if (checked) {
-            // Simpan nilai sebelumnya sebelum menggunakan default
-            input.dataset.previousValue = input.value;
-            input.value = value;
-            input.classList.add('bg-light');
+    const templates = {
+        'basic_status': '{device_name} - {pin_name} is now {status}',
+        'detailed_status': '🔔 Device: {device_name}\n📍 Pin: {pin_name}\n📊 Status: {status}\n📈 Value: {value}\n⏰ Time: {time}',
+        'schedule_status': '⏰ Scheduled Action\nDevice: {device_name}\nPin: {pin_name}\nAction: {status}\nTime: {time}\nDate: {date}',
+        'threshold_alert': '⚠️ ALERT!\nDevice: {device_name}\nPin: {pin_name}\nValue: {value}\nThreshold: {threshold}\nTime: {time}',
+        'custom': messageTemplate.value // Preserve current value when switching to custom
+    };
+
+    if (templateType && templateType !== 'custom') {
+        messageTemplate.value = templates[templateType];
+    }
+}
+
+function toggleScheduleSettings(enabled) {
+    const scheduleSettingsContent = document.getElementById('scheduleSettingsContent');
+    if (enabled) {
+        scheduleSettingsContent.classList.add('show');
         } else {
-            // Kembalikan ke nilai sebelumnya jika ada
-            input.value = input.dataset.previousValue || '';
-            input.classList.remove('bg-light');
+        scheduleSettingsContent.classList.remove('show');
+        // Reset repeat settings when schedule is disabled
+        document.getElementById('repeatHourly').checked = false;
+        toggleRepeatSettings(false);
+    }
+}
+
+function toggleRepeatSettings(enabled) {
+    const repeatSettingsContent = document.getElementById('repeatSettingsContent');
+    if (enabled) {
+        repeatSettingsContent.classList.add('show');
+    } else {
+        repeatSettingsContent.classList.remove('show');
+    }
+}
+
+// Initialize settings visibility on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const scheduleEnabled = document.getElementById('useSchedule').checked;
+    const repeatEnabled = document.getElementById('repeatHourly').checked;
+    
+    toggleScheduleSettings(scheduleEnabled);
+    toggleRepeatSettings(repeatEnabled);
+});
+
+function submitForm(event) {
+    event.preventDefault();
+    
+    // Get the form
+    const form = document.getElementById('pinSettingsForm');
+    
+    // Basic validation
+    const scheduleEnabled = document.getElementById('useSchedule').checked;
+    if (scheduleEnabled) {
+        const startTime = document.getElementById('start_time').value;
+        const onDuration = document.getElementById('on_duration').value;
+        const cycleInterval = document.getElementById('cycle_interval').value;
+        
+        if (!startTime) {
+            notifications.warning('Please set a start time for the schedule');
+            return;
         }
-    });
+        if (!onDuration) {
+            notifications.warning('Please set the ON duration');
+            return;
+        }
+        if (!cycleInterval) {
+            notifications.warning('Please set the cycle interval');
+            return;
+        }
+    }
+
+    // Show loading state on button
+    const submitBtn = event.target;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+
+    // Submit the form
+    form.submit();
+}
+
+function confirmDeletePin() {
+    confirmDelete('deletePinForm');
 }
 </script>
 @endpush
-@endsection 

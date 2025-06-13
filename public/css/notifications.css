@@ -1,0 +1,136 @@
+/* Notification Styles */
+:root {
+    --gradient-start: #00BFA6;
+    --gradient-end: #0093E9;
+    --gradient-mix: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    --shadow-color: rgba(0, 191, 166, 0.15);
+    --text-primary: #2C3E50;
+    --text-secondary: #7F8C8D;
+    --success-gradient: linear-gradient(135deg, #2ECC71 0%, #1abc9c 100%);
+    --warning-gradient: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+    --error-gradient: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    --info-gradient: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+}
+
+/* SweetAlert2 Custom Styles */
+.swal2-popup {
+    border-radius: 1.5rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.swal2-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.swal2-html-container {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 1rem 0;
+}
+
+.swal2-icon {
+    border-radius: 50%;
+    margin: 1.5rem auto;
+}
+
+/* Success Alert */
+.swal2-icon.swal2-success {
+    border-color: #2ECC71;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #2ECC71;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(46, 204, 113, 0.3);
+}
+
+/* Error Alert */
+.swal2-icon.swal2-error {
+    border-color: #E74C3C;
+}
+
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: #E74C3C;
+}
+
+/* Warning Alert */
+.swal2-icon.swal2-warning {
+    border-color: #f1c40f;
+    color: #f1c40f;
+}
+
+/* Info Alert */
+.swal2-icon.swal2-info {
+    border-color: #3498DB;
+    color: #3498DB;
+}
+
+/* Question Alert */
+.swal2-icon.swal2-question {
+    border-color: var(--gradient-start);
+    color: var(--gradient-start);
+}
+
+/* Buttons */
+.swal2-actions {
+    margin-top: 1.5rem;
+}
+
+.swal2-styled.swal2-confirm {
+    background: var(--gradient-mix);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.swal2-styled.swal2-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.swal2-styled.swal2-cancel {
+    background: #e2e8f0;
+    color: var(--text-primary);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.swal2-styled.swal2-cancel:hover {
+    background: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+/* Toast Notification */
+.swal2-toast {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 30px var(--shadow-color);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+}
+
+.swal2-toast .swal2-title {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.swal2-toast .swal2-html-container {
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0;
+}
+
+/* Progress Bar */
+.swal2-timer-progress-bar {
+    background: var(--gradient-mix);
+} 

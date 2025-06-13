@@ -1,0 +1,95 @@
+:root {
+    --primary: #00BFA6;
+    --primary-dark: #00A67C;
+    --primary-gradient: linear-gradient(135deg, #00BFA6 0%, #0093E9 100%);
+    --primary-light: #E6FBF8;
+    --secondary: #0093E9;
+    --text-primary: #2C3E50;
+    --text-secondary: #7F8C8D;
+    --bg-light: #FFFFFF;
+    --bg-gradient: linear-gradient(135deg, #E6FBF8 0%, #E0F2FE 100%);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Floating Background Elements */
+.floating-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.floating-bg::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    z-index: -1;
+    background: radial-gradient(circle, rgba(0, 191, 166, 0.1) 0%, rgba(0, 147, 233, 0.05) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: rotate 30s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Floating Icons */
+.floating-icons {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.floating-icon {
+    position: absolute;
+    font-size: 4rem;
+    color: rgba(0, 191, 166, 0.05);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+    
+    .floating-icons {
+        display: none;
+    }
+} 

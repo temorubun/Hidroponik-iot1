@@ -11,6 +11,16 @@ class Pin extends Model
 {
     use HasUuid;
 
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     protected $fillable = [
         'name',
         'pin_number',

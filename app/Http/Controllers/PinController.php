@@ -175,6 +175,17 @@ class PinController extends Controller
         }
     }
 
+    public function show(Device $device, Pin $pin)
+    {
+        // Load the device relationship if not already loaded
+        $pin->load('device');
+        
+        // Get the last value for this pin
+        $pin->last_value = $pin->value;
+        
+        return view('pins.show', compact('pin'));
+    }
+
     public function edit(Device $device, Pin $pin)
     {
         return view('pins.edit', compact('device', 'pin'));

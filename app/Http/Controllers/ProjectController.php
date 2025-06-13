@@ -4,12 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = auth()->user()->projects()->with('devices')->get();
+        $projects = auth()->user()->projects()
+            ->withCount('devices')
+            ->with(['devices' => function($query) {
+                $query->orderByDesc(
+                    DB::raw('GREATEST(created_at, updated_at)')
+                );
+            }])
+            ->get()
+            ->map(function($project) {
+                // Get the latest device activity time (either creation or update)
+                $latestDevice = $project->devices->first();
+                $latestDeviceTime = $latestDevice ? max($latestDevice->created_at, $latestDevice->updated_at) : null;
+                
+                // Set effective_updated_at to the latest between project update and device activity
+                $project->effective_updated_at = $latestDeviceTime && $latestDeviceTime > $project->updated_at 
+                    ? $latestDeviceTime 
+                    : $project->updated_at;
+                
+                return $project;
+            });
+
         return view('projects.index', compact('projects'));
     }
 
@@ -37,7 +58,19 @@ class ProjectController extends Controller
             abort(403);
         }
         
-        $project->load('devices');
+        $project->load(['devices' => function($query) {
+            $query->orderByDesc(
+                DB::raw('GREATEST(created_at, updated_at)')
+            );
+        }]);
+
+        // Calculate effective_updated_at
+        $latestDevice = $project->devices->first();
+        $latestDeviceTime = $latestDevice ? max($latestDevice->created_at, $latestDevice->updated_at) : null;
+        $project->effective_updated_at = $latestDeviceTime && $latestDeviceTime > $project->updated_at 
+            ? $latestDeviceTime 
+            : $project->updated_at;
+
         return view('projects.show', compact('project'));
     }
 
@@ -58,8 +91,7 @@ class ProjectController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:active,inactive,archived'
+            'description' => 'nullable|string'
         ]);
 
         $project->update($validated);

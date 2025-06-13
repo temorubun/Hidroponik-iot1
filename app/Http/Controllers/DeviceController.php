@@ -60,7 +60,8 @@ class DeviceController extends Controller
             abort(403);
         }
 
-        return view('devices.edit', compact('device'));
+        $projects = auth()->user()->projects;
+        return view('devices.edit', compact('device', 'projects'));
     }
 
     public function update(Request $request, Device $device)

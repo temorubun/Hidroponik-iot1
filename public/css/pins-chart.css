@@ -1,0 +1,40 @@
+:root {
+    --gradient-start: #00BFA6;
+    --gradient-end: #0093E9;
+    --gradient-mix: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    --shadow-color: rgba(0, 191, 166, 0.15);
+}
+
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        width: 100%;
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .container-fluid {
+        width: 100%;
+        padding: 1rem;
+    }
+}
+
+.gradient-text {
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+} 

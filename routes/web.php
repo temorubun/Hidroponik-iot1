@@ -53,20 +53,27 @@ Route::middleware(['auth'])->group(function () {
     
     // Pin Management
     Route::get('/pins', [PinController::class, 'index'])->name('pins.index');
-    Route::get('/pins/chart', [PinController::class, 'charts'])->name('pins.charts');
+    Route::get('/pins/charts', [PinController::class, 'charts'])->name('pins.charts');
     Route::get('/devices/{device}/pins/create', [PinController::class, 'create'])->name('pins.create');
     Route::post('/devices/{device}/pins', [PinController::class, 'store'])->name('pins.store');
+    Route::get('/devices/{device}/pins/{pin}', [PinController::class, 'show'])->name('pins.show');
     Route::get('/devices/{device}/pins/{pin}/edit', [PinController::class, 'edit'])->name('pins.edit');
     Route::put('/devices/{device}/pins/{pin}', [PinController::class, 'update'])->name('pins.update');
     Route::delete('/devices/{device}/pins/{pin}', [PinController::class, 'destroy'])->name('pins.destroy');
     Route::post('/devices/{device}/pins/{pin}/status', [PinController::class, 'updateStatus'])->name('pins.update-status');
     Route::get('/devices/{device}/pins/{pin}/chart', [PinController::class, 'chart'])->name('pins.chart');
 
+    // Pin Charts
+    Route::get('/pins/{device}/{pin}/chart', [PinController::class, 'chart'])->name('pins.device-chart');
+    Route::get('/api/pins/{pin}/chart-data', [PinController::class, 'chartData'])->name('pins.chart-data');
+
     // User Profile Management
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/2fa/enable', [ProfileController::class, 'enableTwoFactor'])->name('profile.2fa.enable');
-    Route::post('/profile/2fa/disable', [ProfileController::class, 'disableTwoFactor'])->name('profile.2fa.disable');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::post('/profile/2fa/enable', [ProfileController::class, 'enableTwoFactor'])->name('two-factor.enable');
+    Route::post('/profile/2fa/disable', [ProfileController::class, 'disableTwoFactor'])->name('two-factor.disable');
     Route::post('/profile/logout-other-devices', [ProfileController::class, 'logoutOtherDevices'])->name('profile.logout-other-devices');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 

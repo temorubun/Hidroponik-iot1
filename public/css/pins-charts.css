@@ -1,0 +1,70 @@
+.container-fluid {
+    padding: 2rem;
+    margin-top: 4rem; /* Add margin to account for fixed navbar */
+    position: relative;
+    z-index: 1;
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        padding-top: 2rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .container-fluid {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+        margin-top: 4rem; /* Increase top margin on mobile */
+    }
+}
+
+.gradient-text {
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px var(--shadow-color);
+}
+
+.btn-light {
+    border: none;
+    background: white;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.btn-light:hover {
+    background: var(--gradient-mix);
+    color: white;
+}
+
+.chart-container {
+    margin: 1rem 0;
+}
+
+/* Fix for content being hidden under navbar */
+.content-wrapper {
+    padding-top: 1rem;
+}
+
+/* Ensure cards don't get hidden */
+.row.g-4 {
+    margin-top: 0;
+} 

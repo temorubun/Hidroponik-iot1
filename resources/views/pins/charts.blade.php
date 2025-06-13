@@ -1,109 +1,148 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-between mb-4">
-        <div class="col-auto">
-            <h2><i class="fas fa-chart-line"></i> Pin Charts</h2>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('pins.index') }}" class="btn btn-primary">
-                <i class="fas fa-th"></i> View All Pins
-            </a>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+        <div>
+            <h1 class="h2 mb-0 gradient-text">Pin Charts</h1>
+            <p class="text-muted mb-0">Monitor all your pins in real-time</p>
         </div>
     </div>
 
-    @if($pins->isEmpty())
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-                <h5>No Data to Display</h5>
-                <p class="text-muted">Configure pins to start collecting data</p>
-            </div>
-        </div>
-    @else
-        <div class="row">
-            @foreach($pins as $pin)
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">{{ $pin->name }}</h6>
-                                    <small class="text-muted">{{ $pin->device->name }}</small>
-                                </div>
-                                <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-outline-secondary active" 
-                                        onclick="updateChart({{ $pin->id }}, 'day')">Day</button>
-                                    <button type="button" class="btn btn-outline-secondary" 
-                                        onclick="updateChart({{ $pin->id }}, 'week')">Week</button>
-                                    <button type="button" class="btn btn-outline-secondary" 
-                                        onclick="updateChart({{ $pin->id }}, 'month')">Month</button>
-                                </div>
-                            </div>
+    <div class="row g-4">
+        @forelse($pins as $pin)
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="gradient-text mb-1">{{ $pin->name }}</h5>
+                            <p class="text-muted mb-0">Pin {{ $pin->pin_number }} - {{ ucfirst($pin->type) }}</p>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-{{ $pin->settings['icon'] ?? 'microchip' }}"></i>
-                                    {{ ucfirst(str_replace('_', ' ', $pin->type)) }}
-                                </small>
-                                <br>
-                                <small class="text-muted">
-                                    <i class="fas fa-hashtag"></i>
-                                    GPIO {{ $pin->pin_number }}
-                                </small>
-                            </div>
+                        <a href="{{ route('pins.chart', ['device' => $pin->device_id, 'pin' => $pin->id]) }}" 
+                           class="btn btn-light btn-sm">
+                            <i class="fas fa-expand-alt me-2"></i>Full View
+                        </a>
+                    </div>
 
-                            <div class="chart-container" style="position: relative; height: 200px;">
-                                <canvas id="chart-{{ $pin->id }}"></canvas>
-                            </div>
+                    <div class="chart-container" style="position: relative; height: 200px;">
+                        <canvas id="chart-{{ $pin->id }}"></canvas>
+                    </div>
 
-                            <div class="row mt-3 text-center">
-                                <div class="col">
-                                    <small class="text-muted d-block">Average</small>
-                                    <strong id="avg-{{ $pin->id }}">-</strong>
-                                </div>
-                                <div class="col">
-                                    <small class="text-muted d-block">Minimum</small>
-                                    <strong id="min-{{ $pin->id }}">-</strong>
-                                </div>
-                                <div class="col">
-                                    <small class="text-muted d-block">Maximum</small>
-                                    <strong id="max-{{ $pin->id }}">-</strong>
-                                </div>
-                            </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <div class="text-center">
+                            <small class="text-muted d-block">Current</small>
+                            <strong class="gradient-text" id="current-{{ $pin->id }}">{{ $pin->last_value ?: 'N/A' }}</strong>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted d-block">Average</small>
+                            <strong class="gradient-text" id="avg-{{ $pin->id }}">-</strong>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted d-block">Min</small>
+                            <strong class="gradient-text" id="min-{{ $pin->id }}">-</strong>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted d-block">Max</small>
+                            <strong class="gradient-text" id="max-{{ $pin->id }}">-</strong>
                         </div>
                     </div>
                 </div>
-            @endforeach
+            </div>
         </div>
-    @endif
+        @empty
+        <div class="col-12">
+            <div class="card" data-aos="fade-up">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                    <h5>No Pins Found</h5>
+                    <p class="text-muted mb-0">Create some pins to start monitoring their data.</p>
+                </div>
+            </div>
+        </div>
+        @endforelse
+    </div>
 </div>
 
 @push('styles')
 <style>
+:root {
+    --gradient-start: #00BFA6;
+    --gradient-end: #0093E9;
+    --gradient-mix: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    --shadow-color: rgba(0, 191, 166, 0.15);
+}
+
+.container-fluid {
+    padding: 2rem;
+    margin-top: 4rem; /* Add margin to account for fixed navbar */
+    position: relative;
+    z-index: 1;
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        padding-top: 2rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .container-fluid {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+        margin-top: 4rem; /* Increase top margin on mobile */
+    }
+}
+
+.gradient-text {
+    background: var(--gradient-mix);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
 .card {
-    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
 }
-.card-header {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px var(--shadow-color);
 }
-.btn-group {
-    border-radius: 5px;
-    overflow: hidden;
+
+.btn-light {
+    border: none;
+    background: white;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
-.btn-group .btn {
-    border-radius: 0;
+
+.btn-light:hover {
+    background: var(--gradient-mix);
+    color: white;
 }
-.btn-group .btn:first-child {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+
+.chart-container {
+    margin: 1rem 0;
 }
-.btn-group .btn:last-child {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+
+/* Fix for content being hidden under navbar */
+.content-wrapper {
+    padding-top: 1rem;
+}
+
+/* Ensure cards don't get hidden */
+.row.g-4 {
+    margin-top: 0;
 }
 </style>
 @endpush
@@ -113,7 +152,14 @@
 <script>
 const charts = {};
 
-function initChart(pinId) {
+document.addEventListener('DOMContentLoaded', function() {
+    @foreach($pins as $pin)
+    initializeChart({{ $pin->id }});
+    loadData({{ $pin->id }});
+    @endforeach
+});
+
+function initializeChart(pinId) {
     const ctx = document.getElementById(`chart-${pinId}`).getContext('2d');
     charts[pinId] = new Chart(ctx, {
         type: 'line',
@@ -122,11 +168,11 @@ function initChart(pinId) {
             datasets: [{
                 label: 'Value',
                 data: [],
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderColor: '#00BFA6',
+                backgroundColor: 'rgba(0, 191, 166, 0.1)',
                 borderWidth: 2,
-                fill: true,
-                tension: 0.4
+                tension: 0.4,
+                fill: true
             }]
         },
         options: {
@@ -139,7 +185,10 @@ function initChart(pinId) {
             },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
                 },
                 x: {
                     grid: {
@@ -149,53 +198,38 @@ function initChart(pinId) {
             }
         }
     });
-    return charts[pinId];
 }
 
-function updateChart(pinId, range = 'day') {
-    // Update active button state
-    const buttons = document.querySelector(`#chart-${pinId}`).closest('.card').querySelectorAll('.btn-group .btn');
-    buttons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase() === range) {
-            btn.classList.add('active');
-        }
-    });
-
-    fetch(`/api/pins/${pinId}/chart-data?range=${range}`)
+function loadData(pinId) {
+    fetch(`/api/pins/${pinId}/chart-data?range=day`)
         .then(response => response.json())
         .then(data => {
-            const chart = charts[pinId] || initChart(pinId);
-            chart.data.labels = data.timestamps;
-            chart.data.datasets[0].data = data.values;
-            chart.update();
-
-            // Update statistics
-            document.getElementById(`avg-${pinId}`).textContent = 
-                typeof data.stats.avg === 'number' ? data.stats.avg.toFixed(2) : '-';
-            document.getElementById(`min-${pinId}`).textContent = 
-                typeof data.stats.min === 'number' ? data.stats.min.toFixed(2) : '-';
-            document.getElementById(`max-${pinId}`).textContent = 
-                typeof data.stats.max === 'number' ? data.stats.max.toFixed(2) : '-';
+            updateChart(pinId, data);
+            updateStats(pinId, data);
         })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        .catch(error => console.error('Error loading data:', error));
 }
 
-// Initialize all charts with day range
-document.addEventListener('DOMContentLoaded', function() {
-    @foreach($pins as $pin)
-        updateChart({{ $pin->id }}, 'day');
-    @endforeach
+function updateChart(pinId, data) {
+    charts[pinId].data.labels = data.timestamps;
+    charts[pinId].data.datasets[0].data = data.values;
+    charts[pinId].update();
+}
 
-    // Update charts every 30 seconds
-    setInterval(function() {
-        @foreach($pins as $pin)
-            updateChart({{ $pin->id }}, 'day');
-        @endforeach
-    }, 30000);
-});
+function updateStats(pinId, data) {
+    document.getElementById(`avg-${pinId}`).textContent = data.stats.avg.toFixed(2);
+    document.getElementById(`min-${pinId}`).textContent = data.stats.min.toFixed(2);
+    document.getElementById(`max-${pinId}`).textContent = data.stats.max.toFixed(2);
+}
+
+// WebSocket connection for real-time updates
+const ws = new WebSocket(`ws://${window.location.hostname}:6001`);
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    const element = document.getElementById(`current-${data.pin_id}`);
+    if (element) {
+        element.textContent = data.value;
+    }
+};
 </script>
-@endpush
-@endsection 
+@endpush 

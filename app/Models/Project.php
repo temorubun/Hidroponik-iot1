@@ -14,8 +14,7 @@ class Project extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'description',
-        'status'
+        'description'
     ];
 
     public function user(): BelongsTo

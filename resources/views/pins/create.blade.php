@@ -1,53 +1,53 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
-<div class="container">
-    @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i>
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
+    @component('layouts.content-layout')
+        @slot('breadcrumb')
+            <a href="{{ route('devices.show', $device) }}" class="dashboard-link">
+                <i class="fas fa-microchip me-2"></i>
+                {{ $device->name }}
+            </a>
+        @endslot
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Add New Pin</h5>
-                        <a href="{{ route('devices.show', $device) }}" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </a>
-                    </div>
-                </div>
+        @slot('title', 'Add New Pin')
+        @slot('subtitle', 'Configure a new pin for your IoT device')
+        @slot('icon', 'fas fa-plug')
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('pins.store', $device) }}" id="createPinForm">
+        <div class="col-lg-8 mx-auto">
+            <div class="project-card" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('pins.store', $device) }}" id="createPinForm" class="form-centered">
                         @csrf
 
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Pin Name</label>
-                            <div class="input-group">
+                        <!-- Pin Name -->
+                        <div class="form-group mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag me-2 gradient-icon"></i><span class="gradient-text">Pin Name</span>
+                            </label>
+                            <div class="input-group input-group-custom">
                                 <span class="input-group-text">
-                                    <i class="fas fa-tag"></i>
+                                    <i class="fas fa-tag gradient-icon"></i>
                                 </span>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                                <input type="text" class="form-control form-control-custom @error('name') is-invalid @enderror" 
                                     id="name" name="name" value="{{ old('name') }}" required 
                                     placeholder="Enter pin name">
+                                @error('name')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <small class="form-text text-muted mt-2">Choose a descriptive name for your pin</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="type" class="form-label">Pin Type</label>
-                            <div class="input-group">
+                        <!-- Pin Type -->
+                        <div class="form-group mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <label for="type" class="form-label">
+                                <i class="fas fa-cog me-2 gradient-icon"></i><span class="gradient-text">Pin Type</span>
+                            </label>
+                            <div class="input-group input-group-custom">
                                 <span class="input-group-text">
-                                    <i class="fas fa-cog"></i>
+                                    <i class="fas fa-cog gradient-icon"></i>
                                 </span>
-                                <select class="form-select @error('type') is-invalid @enderror" 
+                                <select class="form-select form-control-custom @error('type') is-invalid @enderror" 
                                     id="type" name="type" required onchange="updatePinNumbers()">
                                     <option value="">Select Pin Type</option>
                                     <option value="digital_output" {{ old('type') == 'digital_output' ? 'selected' : '' }}>
@@ -63,82 +63,110 @@
                                         pH Sensor
                                     </option>
                                 </select>
+                                @error('type')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <small class="form-text text-muted mt-2">Select the type of pin you want to configure</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="pin_number" class="form-label">GPIO Pin Number</label>
-                            <div class="input-group">
+                        <!-- GPIO Pin Number -->
+                        <div class="form-group mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <label for="pin_number" class="form-label">
+                                <i class="fas fa-microchip me-2 gradient-icon"></i><span class="gradient-text">GPIO Pin Number</span>
+                            </label>
+                            <div class="input-group input-group-custom">
                                 <span class="input-group-text">
-                                    <i class="fas fa-microchip"></i>
+                                    <i class="fas fa-microchip gradient-icon"></i>
                                 </span>
-                                <select class="form-select @error('pin_number') is-invalid @enderror" 
+                                <select class="form-select form-control-custom @error('pin_number') is-invalid @enderror" 
                                     id="pin_number" name="pin_number" required>
                                     <option value="">Select GPIO Pin</option>
                                 </select>
+                                @error('pin_number')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('pin_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <small class="form-text text-muted mt-2">Choose the GPIO pin number for your device</small>
                         </div>
 
                         <!-- pH Sensor Settings -->
-                        <div id="phSensorSettings" style="display: none;">
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                    <h6 class="mb-0">pH Sensor Settings</h6>
+                        <div id="phSensorSettings" style="display: none;" data-aos="fade-up" data-aos-delay="400">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 gradient-text">
+                                        <i class="fas fa-flask me-2"></i>pH Sensor Settings
+                                    </h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">Calibration Points</label>
-                                        <div class="form-check mb-2">
+                                    <div class="mb-4">
+                                        <label class="form-label gradient-text">Calibration Points</label>
+                                        <div class="form-check mb-3">
                                             <input class="form-check-input" type="checkbox" id="useDefaultValues" 
                                                 onchange="toggleDefaultValues(this.checked)">
                                             <label class="form-check-label" for="useDefaultValues">
                                                 Use Default Values
                                             </label>
                                         </div>
-                                        <div class="row g-2">
-                                            <div class="col-md-4">
-                                                <div class="input-group">
-                                                    <span class="input-group-text">pH 4.0</span>
-                                                    <input type="number" class="form-control" id="cal4" name="settings[calibration][4]" 
+                                        <div class="row g-4">
+                                            <div class="col-lg-4">
+                                                <label class="form-label text-muted small mb-2">pH 4.0 Calibration</label>
+                                                <div class="input-group input-group-custom">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-vial gradient-icon"></i>
+                                                    </span>
+                                                    <span class="input-group-text bg-light">pH 4.0</span>
+                                                    <input type="number" class="form-control form-control-custom" 
+                                                        id="cal4" name="settings[calibration][4]" 
                                                         placeholder="Raw ADC value" step="1" min="0" max="4095">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="input-group">
-                                                    <span class="input-group-text">pH 7.0</span>
-                                                    <input type="number" class="form-control" id="cal7" name="settings[calibration][7]" 
+                                            <div class="col-lg-4">
+                                                <label class="form-label text-muted small mb-2">pH 7.0 Calibration</label>
+                                                <div class="input-group input-group-custom">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-vial gradient-icon"></i>
+                                                    </span>
+                                                    <span class="input-group-text bg-light">pH 7.0</span>
+                                                    <input type="number" class="form-control form-control-custom" 
+                                                        id="cal7" name="settings[calibration][7]" 
                                                         placeholder="Raw ADC value" step="1" min="0" max="4095">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="input-group">
-                                                    <span class="input-group-text">pH 10.0</span>
-                                                    <input type="number" class="form-control" id="cal10" name="settings[calibration][10]" 
+                                            <div class="col-lg-4">
+                                                <label class="form-label text-muted small mb-2">pH 10.0 Calibration</label>
+                                                <div class="input-group input-group-custom">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-vial gradient-icon"></i>
+                                                    </span>
+                                                    <span class="input-group-text bg-light">pH 10.0</span>
+                                                    <input type="number" class="form-control form-control-custom" 
+                                                        id="cal10" name="settings[calibration][10]" 
                                                         placeholder="Raw ADC value" step="1" min="0" max="4095">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="row g-2">
+                                    <div class="row g-3">
                                         <div class="col-md-6">
-                                            <div class="input-group">
-                                                <span class="input-group-text">Samples</span>
-                                                <input type="number" class="form-control" id="samples" name="settings[samples]" 
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-layer-group"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                    id="samples" name="settings[samples]" 
                                                     value="10" min="1" max="100" step="1" required>
                                             </div>
                                             <small class="text-muted">Number of samples to average (1-100)</small>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="input-group">
-                                                <span class="input-group-text">Interval</span>
-                                                <input type="number" class="form-control" id="interval" name="settings[interval]" 
+                                            <div class="input-group input-group-custom">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-clock"></i>
+                                                </span>
+                                                <input type="number" class="form-control form-control-custom" 
+                                                    id="interval" name="settings[interval]" 
                                                     value="1000" min="100" step="100" required>
                                                 <span class="input-group-text">ms</span>
                                             </div>
@@ -147,7 +175,7 @@
                                     </div>
 
                                     <div class="alert alert-info mt-3">
-                                        <i class="fas fa-info-circle"></i>
+                                        <i class="fas fa-info-circle me-2"></i>
                                         <strong>Important:</strong> For pH sensors, use ADC1 pins (GPIO32-39) for better accuracy.
                                         Recommended pins: GPIO36, GPIO39, GPIO34, or GPIO35.
                                     </div>
@@ -155,42 +183,23 @@
                             </div>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="submitBtn">
-                                <i class="fas fa-plus-circle"></i> Add Pin
+                        <div class="form-actions d-flex justify-content-between align-items-center mt-5" data-aos="fade-up" data-aos-delay="500">
+                            <a href="{{ route('devices.show', $device) }}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Add Pin
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    @endcomponent
+@endsection
 
 @push('styles')
-<style>
-.card {
-    border-radius: 15px;
-}
-.card-header {
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
-.input-group-text {
-    background-color: #f8f9fa;
-    border-right: none;
-}
-.form-control, .form-select {
-    border-left: none;
-}
-.form-control:focus, .form-select:focus {
-    border-color: #ced4da;
-    box-shadow: none;
-}
-.input-group:focus-within .input-group-text {
-    border-color: #86b7fe;
-}
-</style>
+<link href="{{ asset('css/projects.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
@@ -263,4 +272,3 @@ function toggleDefaultValues(checked) {
 }
 </script>
 @endpush
-@endsection 

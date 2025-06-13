@@ -1,92 +1,77 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Create New Project</h5>
-                        <a href="{{ route('projects.index') }}" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </a>
-                    </div>
-                </div>
+    @component('layouts.content-layout')
+        @slot('breadcrumb')
+            <a href="{{ route('projects.index') }}" class="dashboard-link">
+                <i class="fas fa-project-diagram me-2"></i>
+                Projects
+            </a>
+        @endslot
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('projects.store') }}">
+        @slot('title', 'Create New Project')
+        @slot('subtitle', 'Fill in the details below to create your new IoT project')
+        @slot('icon', 'fas fa-project-diagram')
+
+        <div class="col-lg-8 mx-auto">
+            <div class="project-card" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('projects.store') }}" class="form-centered">
                         @csrf
 
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Project Name</label>
-                            <div class="input-group">
+                        <!-- Project Name -->
+                        <div class="form-group mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-project-diagram me-2 gradient-icon"></i><span class="gradient-text">Project Name</span>
+                            </label>
+                            <div class="input-group input-group-custom">
                                 <span class="input-group-text">
-                                    <i class="fas fa-project-diagram"></i>
+                                    <i class="fas fa-tag gradient-icon"></i>
                                 </span>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                    id="name" name="name" value="{{ old('name') }}" required 
-                                    placeholder="Enter project name">
+                                <input type="text" class="form-control form-control-custom @error('name') is-invalid @enderror"
+                                       id="name" name="name" value="{{ old('name') }}"
+                                       placeholder="Enter project name" required autofocus>
+                                @error('name')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <small class="form-text text-muted mt-2">Choose a unique and descriptive name for your project</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <div class="input-group">
+                        <!-- Description -->
+                        <div class="form-group mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-2 gradient-icon"></i><span class="gradient-text">Description</span>
+                            </label>
+                            <div class="input-group input-group-custom">
                                 <span class="input-group-text">
-                                    <i class="fas fa-align-left"></i>
+                                    <i class="fas fa-comment-alt gradient-icon"></i>
                                 </span>
-                                <textarea class="form-control @error('description') is-invalid @enderror" 
-                                    id="description" name="description" rows="3" 
-                                    placeholder="Describe your project">{{ old('description') }}</textarea>
+                                <textarea class="form-control form-control-custom @error('description') is-invalid @enderror"
+                                          id="description" name="description" rows="4"
+                                          placeholder="Enter project description">{{ old('description') }}</textarea>
+                                @error('description')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <small class="form-text text-muted mt-2">Provide a brief description of your project (optional)</small>
                         </div>
 
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> After creating the project, you can add devices and configure them.
-                        </div>
-
-                        <div class="d-grid">
+                        <div class="form-actions d-flex justify-content-between align-items-center mt-5" data-aos="fade-up" data-aos-delay="300">
+                            <a href="{{ route('projects.index') }}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-plus-circle"></i> Create Project
+                                <i class="fas fa-save me-2"></i>Create Project
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    @endcomponent
+@endsection
 
 @push('styles')
-<style>
-.card {
-    border-radius: 15px;
-}
-.card-header {
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
-.input-group-text {
-    background-color: #f8f9fa;
-    border-right: none;
-}
-.form-control, .form-select {
-    border-left: none;
-}
-.form-control:focus, .form-select:focus {
-    border-color: #ced4da;
-    box-shadow: none;
-}
-.input-group:focus-within .input-group-text {
-    border-color: #86b7fe;
-}
-</style>
-@endpush
-@endsection 
+<link href="{{ asset('css/projects.css') }}" rel="stylesheet">
+@endpush 

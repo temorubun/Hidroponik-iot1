@@ -10,9 +10,14 @@ use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
-    public function edit()
+    public function index()
     {
         return view('profile.index');
+    }
+
+    public function edit()
+    {
+        return view('profile.edit');
     }
 
     public function update(Request $request)
@@ -120,5 +125,23 @@ class ProfileController extends Controller
         $user->delete();
 
         return redirect('/')->with('status', 'Your account has been deleted successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', function ($attribute, $value, $fail) {
+                if (!Hash::check($value, auth()->user()->password)) {
+                    $fail('The current password is incorrect.');
+                }
+            }],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        auth()->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('status', 'Password updated successfully!');
     }
 } 

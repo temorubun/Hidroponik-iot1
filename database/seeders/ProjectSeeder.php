@@ -18,15 +18,13 @@ class ProjectSeeder extends Seeder
             Project::create([
                 'user_id' => $user->id,
                 'name' => 'Hydroponic System',
-                'description' => 'NFT hydroponic system with automated pH and water level control',
-                'status' => 'active'
+                'description' => 'NFT hydroponic system with automated pH and water level control'
             ]);
 
             Project::create([
                 'user_id' => $user->id,
                 'name' => 'Aquaponic System',
-                'description' => 'Integrated aquaponic system with fish tank monitoring',
-                'status' => 'active'
+                'description' => 'Integrated aquaponic system with fish tank monitoring'
             ]);
         }
     }

@@ -1,0 +1,24 @@
+/* Floating Icons Animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+.floating-icons {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.floating-icon {
+    position: absolute;
+    font-size: 2rem;
+    color: var(--primary, #00BFA6);
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+    z-index: 0;
+} 
