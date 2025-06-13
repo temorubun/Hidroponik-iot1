@@ -23,7 +23,9 @@ export class DeviceStatusHandler {
 
     updateUI(deviceId, data) {
         // Update status badge
-        const statusBadges = document.querySelectorAll('.device-status-badge, .status-badge');
+        const statusBadges = document.querySelectorAll(
+            `[data-device-id="${deviceId}"] .device-status-badge, [data-device-id="${deviceId}"] .status-badge`
+        );
         statusBadges.forEach(badge => {
             badge.className = `badge ${data.is_online ? 'bg-success' : 'bg-danger'} device-status-badge`;
             badge.innerHTML = `
